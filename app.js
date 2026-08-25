@@ -587,12 +587,18 @@ function showAIResponse() {
 
 /* Daten an Supabase senden */
 
-async function saveTrial(
-    secondAnswer
-) {
+async function saveTrial(secondAnswer) {
 
-    const task =
-        tasks[currentTask];
+    const task = tasks[currentTask];
+
+    const firstAnswerCorrect =
+        firstAnswer === task.correctAnswer;
+
+    const secondAnswerCorrect =
+        secondAnswer === task.correctAnswer;
+
+    const changedAnswer =
+        firstAnswer !== secondAnswer;
 
 
     const {
@@ -607,6 +613,12 @@ async function saveTrial(
             task_number:
                 currentTask + 1,
 
+            task_id:
+                task.id,
+
+            task_type:
+                task.type,
+
             first_answer:
                 firstAnswer,
 
@@ -614,7 +626,19 @@ async function saveTrial(
                 task.aiRecommendation,
 
             second_answer:
-                secondAnswer
+                secondAnswer,
+
+            correct_answer:
+                task.correctAnswer,
+
+            first_answer_correct:
+                firstAnswerCorrect,
+
+            second_answer_correct:
+                secondAnswerCorrect,
+
+            changed_answer:
+                changedAnswer
         });
 
 
@@ -634,6 +658,7 @@ async function saveTrial(
         task.id
     );
 }
+
 
 /* Antwortbuttons aktivieren */
 
