@@ -1,1 +1,212 @@
+* {
+    box-sizing: border-box;
+}
 
+body {
+    margin: 0;
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    background: #f5f5f5;
+    color: #222;
+}
+
+.experiment-container {
+    width: 100%;
+    max-width: 850px;
+    margin: 0 auto;
+    min-height: 100vh;
+    background: white;
+}
+
+.experiment-header {
+    padding: 16px 24px;
+    border-bottom: 1px solid #ddd;
+    color: #666;
+    font-size: 14px;
+}
+
+.task-section {
+    padding: 24px;
+    border-bottom: 1px solid #ddd;
+}
+
+.task-section h1 {
+    margin-top: 0;
+    font-size: 24px;
+}
+
+.task-section p {
+    line-height: 1.6;
+}
+
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 500px;
+}
+
+.chat-messages {
+    flex: 1;
+    padding: 24px;
+}
+
+.message {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #222;
+    color: white;
+
+    font-size: 12px;
+    font-weight: bold;
+
+    flex-shrink: 0;
+}
+
+.message-content {
+    max-width: 70%;
+    padding: 12px 16px;
+
+    border-radius: 16px;
+
+    background: #f0f0f0;
+
+    line-height: 1.5;
+}
+
+.user-message {
+    justify-content: flex-end;
+}
+
+.user-message .avatar {
+    order: 2;
+    background: #555;
+}
+
+.user-message .message-content {
+    background: #e8e8e8;
+}
+
+.answer-area {
+    padding: 20px 24px;
+    border-top: 1px solid #ddd;
+}
+
+.answer-options {
+    display: flex;
+    gap: 12px;
+}
+
+.answer-button {
+    flex: 1;
+
+    padding: 14px;
+
+    border: 1px solid #bbb;
+    border-radius: 10px;
+
+    background: white;
+
+    font-size: 16px;
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.answer-button:hover {
+    background: #f0f0f0;
+}
+
+.answer-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.status-message {
+    padding: 16px 24px;
+    text-align: center;
+    font-size: 14px;
+}
+
+/* Ladeanimation */
+
+.typing-indicator {
+    display: flex;
+    gap: 4px;
+    padding: 4px 0;
+}
+
+.typing-indicator span {
+    width: 7px;
+    height: 7px;
+
+    background: #777;
+
+    border-radius: 50%;
+
+    animation: typing 1.2s infinite;
+}
+
+.typing-indicator span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typing-indicator span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes typing {
+    0%, 60%, 100% {
+        opacity: 0.3;
+        transform: translateY(0);
+    }
+
+    30% {
+        opacity: 1;
+        transform: translateY(-3px);
+    }
+}
+
+/* Smartphone */
+
+@media (max-width: 600px) {
+
+    .task-section {
+        padding: 18px;
+    }
+
+    .chat-messages {
+        padding: 18px;
+    }
+
+    .message-content {
+        max-width: 85%;
+    }
+
+    .answer-area {
+        padding: 16px;
+    }
+
+    .answer-options {
+        flex-direction: column;
+    }
+
+    .answer-button {
+        width: 100%;
+    }
+}
