@@ -591,6 +591,9 @@ async function saveTrial(secondAnswer) {
 
     const task = tasks[currentTask];
 
+    console.log("Aktuelle Aufgabe:", task);
+    console.log("Task ID:", task.id);
+    
     const firstAnswerCorrect =
         firstAnswer === task.correctAnswer;
 
