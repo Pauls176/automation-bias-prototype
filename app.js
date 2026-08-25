@@ -591,8 +591,15 @@ async function saveTrial(secondAnswer) {
 
     const task = tasks[currentTask];
 
-    console.log("Aktuelle Aufgabe:", task);
-    console.log("Task ID:", task.id);
+    console.log("========== SAVE TRIAL ==========");
+    console.log("currentTask:", currentTask);
+    console.log("task:", task);
+    console.log("task.id:", task.id);
+    console.log("task.type:", task.type);
+    console.log("firstAnswer:", firstAnswer);
+    console.log("secondAnswer:", secondAnswer);
+    console.log("correctAnswer:", task.correctAnswer);
+    console.log("aiRecommendation:", task.aiRecommendation);
     
     const firstAnswerCorrect =
         firstAnswer === task.correctAnswer;
@@ -603,7 +610,49 @@ async function saveTrial(secondAnswer) {
     const changedAnswer =
         firstAnswer !== secondAnswer;
 
+    const dataToSave = {
 
+        participant_id:
+            participantId,
+
+        task_number:
+            currentTask + 1,
+
+        task_id:
+            task.id,
+
+        task_type:
+            task.type,
+
+        first_answer:
+            firstAnswer,
+
+        ai_recommendation:
+            task.aiRecommendation,
+
+        second_answer:
+            secondAnswer,
+
+        correct_answer:
+            task.correctAnswer,
+
+        first_answer_correct:
+            firstAnswerCorrect,
+
+        second_answer_correct:
+            secondAnswerCorrect,
+
+        changed_answer:
+            changedAnswer
+    };
+
+
+    console.log(
+        "DATEN AN SUPABASE:",
+        dataToSave
+    );
+
+    
     const {
         error
     } = await supabaseClient
