@@ -1,1 +1,90 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
 
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Studie – Automation Bias (Prototyp) </title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+
+    <main class="experiment-container">
+
+        <header class="experiment-header">
+            <span id="task-counter">Aufgabe 1 von 3</span>
+        </header>
+
+        <section class="task-section">
+
+            <h1 id="task-title">
+                Aufgabe
+            </h1>
+
+            <p id="task-description">
+                Bitte lesen Sie die Aufgabenstellung sorgfältig
+                und beantworten Sie anschließend die Frage im Chat.
+            </p>
+
+        </section>
+
+        <section class="chat-container">
+
+            <div id="chat-messages" class="chat-messages">
+
+                <div class="message bot-message">
+                    <div class="avatar">AI</div>
+
+                    <div class="message-content">
+                        <p>
+                            Hallo! Bitte geben Sie Ihre Antwort
+                            auf die Aufgabe ein.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="answer-area">
+
+                <div class="answer-options">
+
+                    <button
+                        class="answer-button"
+                        data-answer="Ja"
+                    >
+                        Ja
+                    </button>
+
+                    <button
+                        class="answer-button"
+                        data-answer="Nein"
+                    >
+                        Nein
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <div
+            id="status-message"
+            class="status-message"
+        ></div>
+
+    </main>
+
+    <script src="app.js"></script>
+
+</body>
+</html>
