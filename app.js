@@ -50,8 +50,12 @@ const tasks = [
         ],
 
         correctAnswer: "Überraschung",
-        
-        aiRecommendation: "Überraschung"
+
+        aiRecommendation: "Überraschung",
+
+        chatIntro:
+            "Bitte geben Sie Ihre Einschätzung " +
+            "zu der abgebildeten Emotion ein."
     },
 
     /* Aufgabe mit Datentabelle */
@@ -90,7 +94,11 @@ const tasks = [
 
         correctAnswer: "weniger als 400.000€",
 
-        aiRecommendation: "weniger als 400.000€"
+        aiRecommendation: "weniger als 400.000€",
+
+        chatIntro:
+            "Bitte geben Sie Ihre Schätzung " +
+            "zum Immobilienwert ein."
     },
 
     /* Aufgabe mit Textverständnis */
@@ -118,8 +126,12 @@ const tasks = [
         ],
 
         correctAnswer: "KI-generiert",
-        
-        aiRecommendation: "von einem Menschen"
+
+        aiRecommendation: "von einem Menschen",
+
+        chatIntro:
+            "Bitte geben Sie Ihre Einschätzung " +
+            "zur Herkunft der Rezension ein."
     }
 
 ];
@@ -319,28 +331,56 @@ function loadTask() {
 
     /* Chat zurücksetzen */
 
-     document.getElementById(
-        "chat-messages"
-    ).innerHTML = `
+    const chatMessages =
+        document.getElementById(
+            "chat-messages"
+        );
 
-        <div class="message bot-message">
+    chatMessages.innerHTML = "";
 
-            <div class="avatar">
-                AI
-            </div>
+    const introMessage =
+        document.createElement("div");
 
-            <div class="message-content">
+    introMessage.className =
+        "message bot-message";
 
-                <p>
-                    Bitte geben Sie Ihre Antwort
-                    auf die Aufgabe ein.
-                </p>
+    const introAvatar =
+        document.createElement("div");
 
-            </div>
+    introAvatar.className =
+        "avatar";
 
-        </div>
+    introAvatar.textContent =
+        "AI";
 
-    `;
+    const introContent =
+        document.createElement("div");
+
+    introContent.className =
+        "message-content";
+
+    const introText =
+        document.createElement("p");
+
+    introText.textContent =
+        task.chatIntro ||
+        "Bitte geben Sie Ihre Antwort auf die Aufgabe ein.";
+
+    introContent.appendChild(
+        introText
+    );
+
+    introMessage.appendChild(
+        introAvatar
+    );
+
+    introMessage.appendChild(
+        introContent
+    );
+
+    chatMessages.appendChild(
+        introMessage
+    );
 
     /* Zustand zurücksetzen */
 
