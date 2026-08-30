@@ -25,116 +25,435 @@ console.log(
 );
 
 
-/* Beispielaufgaben für den Prototypen */
+/* ==========================================================
+   Taskgruppen (5 Themen à 5 Varianten)
+   ==========================================================
 
-const tasks = [
+   Jede Gruppe enthält die gruppenweiten Angaben (Frage,
+   Chat-Intro, Antwortoptionen) und 5 Varianten mit den
+   eigentlichen Daten. Pro Variante wird nur die richtige
+   Antwort sowie je eine Begründung für den Fall "KI empfiehlt
+   richtig" und "KI empfiehlt falsch" hinterlegt - welche der
+   beiden angezeigt wird, ergibt sich automatisch aus der
+   Position der Variante innerhalb der (randomisierten)
+   Gruppen-Reihenfolge (siehe buildSessionTasks). */
 
-    /* Aufgabe mit Bilderkennung */
+const taskGroups = [
+
+    /* Taskgruppe: Speed-Dating-Partner (Tabelle) */
     {
-       id: "photo_01",
-
-        type: "photo",
-
-        title: "Aufgabe 1",
-
-        prompt:
-            "Betrachten Sie das folgende Foto. " +
-            "Welche Emotion drückt das Gesicht der Person primär aus?",
-
-        image:
-            "images/placeholder.jpg",
-
-        options: [
-            "Überraschung",
-            "Besorgnis"
-        ],
-
-        correctAnswer: "Überraschung",
-
-        aiRecommendation: "Überraschung",
-
-        chatIntro:
-            "Bitte geben Sie Ihre Einschätzung " +
-            "zu der abgebildeten Emotion ein."
-    },
-
-    /* Aufgabe mit Datentabelle */
-    {
-         id: "table_01",
+        groupId: "speed_dating",
 
         type: "table",
 
-        title: "Aufgabe 2",
-
         prompt:
-            "Betrachten Sie die folgenden Informationen. " +
-            "Wie viel ist diese Immobilie wert?",
-
-        table: {
-
-            headers: [
-                "",
-                ""
-            ],
-
-            rows: [
-                ["Ort", "Flensburg"],
-                ["Baujahr", "1980"],
-                ["Grundstücksfläche", "500 qm"],
-                ["Wohnfläche", "100 qm"],
-                ["Anzahl Zimmer", "4"],
-                ["Stockwerke", "2"],
-            ]
-             },
-
-        options: [
-            "weniger als 400.000€",
-            "mehr als 400.000€"
-        ],
-
-        correctAnswer: "weniger als 400.000€",
-
-        aiRecommendation: "weniger als 400.000€",
+            "Betrachten Sie die folgenden Informationen zu einem " +
+            "potenziellen Speed-Dating-Partner. Handelt es sich " +
+            "voraussichtlich um ein gutes Match?",
 
         chatIntro:
-            "Bitte geben Sie Ihre Schätzung " +
-            "zum Immobilienwert ein."
+            "Bitte geben Sie Ihre Einschätzung zum Match ab.",
+
+        options: [
+            "Gutes Match",
+            "Kein gutes Match"
+        ],
+
+        /* TODO: Platzhalter-Varianten durch echte Inhalte ersetzen */
+        variants: [
+            {
+                variantId: "speed_dating_01",
+                table: { headers: ["", ""], rows: [["Status", "Platzhalter – Inhalt folgt"]] },
+                correctAnswer: "Gutes Match",
+                explanationIfCorrect: "[Platzhalter-Begründung]",
+                explanationIfWrong: "[Platzhalter-Begründung]"
+            },
+            {
+                variantId: "speed_dating_02",
+                table: { headers: ["", ""], rows: [["Status", "Platzhalter – Inhalt folgt"]] },
+                correctAnswer: "Gutes Match",
+                explanationIfCorrect: "[Platzhalter-Begründung]",
+                explanationIfWrong: "[Platzhalter-Begründung]"
+            },
+            {
+                variantId: "speed_dating_03",
+                table: { headers: ["", ""], rows: [["Status", "Platzhalter – Inhalt folgt"]] },
+                correctAnswer: "Gutes Match",
+                explanationIfCorrect: "[Platzhalter-Begründung]",
+                explanationIfWrong: "[Platzhalter-Begründung]"
+            },
+            {
+                variantId: "speed_dating_04",
+                table: { headers: ["", ""], rows: [["Status", "Platzhalter – Inhalt folgt"]] },
+                correctAnswer: "Kein gutes Match",
+                explanationIfCorrect: "[Platzhalter-Begründung]",
+                explanationIfWrong: "[Platzhalter-Begründung]"
+            },
+            {
+                variantId: "speed_dating_05",
+                table: { headers: ["", ""], rows: [["Status", "Platzhalter – Inhalt folgt"]] },
+                correctAnswer: "Kein gutes Match",
+                explanationIfCorrect: "[Platzhalter-Begründung]",
+                explanationIfWrong: "[Platzhalter-Begründung]"
+            }
+        ]
     },
 
-    /* Aufgabe mit Textverständnis */
+    /* Taskgruppe: Hotelrezension (Text) */
     {
-        id: "text_01",
+        groupId: "hotel_review",
 
         type: "text",
-
-        title: "Aufgabe 3",
 
         prompt:
             "Lesen Sie den folgenden Text. " +
             "Wurde diese Hotelrezension von einem Menschen verfasst oder ist sie KI-generiert?",
 
-        information:
-            "Traumhafter Aufenthalt! " +
-            "Das Hotel überzeugt auf ganzer Linie: Elegante, makellos saubere Zimmer mit fantastischem Ausblick und äußerst bequemen Betten. Das gesamte Personal ist überaus aufmerksam und herzlich. Ein absolutes Highlight ist das erstklassige Frühstücksbuffet mit riesiger regionaler Auswahl. Die ruhige, aber dennoch zentrale Lage rundet das perfekte Urlaubserlebnis ab. Wir kommen garantiert wieder! ",
-
         statement:
-            "Von wem wurde diese Rezension verfasst? ",
+            "Von wem wurde diese Rezension verfasst?",
+
+        chatIntro:
+            "Bitte geben Sie Ihre Einschätzung " +
+            "zur Herkunft der Rezension ein.",
 
         options: [
             "von einem Menschen",
             "KI-generiert"
         ],
 
-        correctAnswer: "KI-generiert",
+        variants: [
+            {
+                variantId: "hotel_review_01",
+                information:
+                    "Positiv:\n\n" +
+                    "Tolles Appartement im Herzen von Trastevere, mitten in einem charmanten Gässchen! " +
+                    "Die Zimmer sind modern ausgestattet, die Betten super bequem! " +
+                    "Angela war eine zuvorkommende Gastgeberin! Wir kommen gerne wieder!",
+                correctAnswer: "von einem Menschen",
+                explanationIfCorrect: "Begründung: Nennung einer konkreten Person und Häufung von Ausrufezeichen.",
+                explanationIfWrong: "Begründung: Nennung einer konkreten Person und Häufung von Ausrufezeichen."
+            },
+            {
+                variantId: "hotel_review_02",
+                information:
+                    "Positiv:\n\n" +
+                    "Große Zimmer modern eingerichtet. 10-15min zu Fuß beim Weißen Haus. " +
+                    "Supermarkt nur 1 Straße weiter entfernt.",
+                correctAnswer: "von einem Menschen",
+                explanationIfCorrect: "Begründung: Schreibweise von Zeit- und Distanzangaben und geringe Emotionalität.",
+                explanationIfWrong: "Begründung: Schreibweise von Zeit- und Distanzangaben und geringe Emotionalität."
+            },
+            {
+                variantId: "hotel_review_03",
+                information:
+                    "Positiv:\n\n" +
+                    "Entgegen der Kritik, bin ich auf Mitarbeiter getroffen, die tatsächlich Englisch sprachen " +
+                    "und auch bemüht waren bei Problemen zu helfen.\n\n" +
+                    "Negativ:\n\n" +
+                    "Das Zimmer war dreckig, der Teppich fleckig und der Roomservice sehr unzuverlässig...",
+                correctAnswer: "KI-generiert",
+                explanationIfCorrect: "Begründung: Bezugnahme auf andere Rezensionen und starke subjektive Meinungsäußerung.",
+                explanationIfWrong: "Begründung: Bezugnahme auf andere Rezensionen und starke subjektive Meinungsäußerung."
+            },
+            {
+                variantId: "hotel_review_04",
+                information:
+                    "Positiv:\n\n" +
+                    "Die Lage des Hotel Passy Eiffel in Paris ist hervorragend, nur wenige Gehminuten vom " +
+                    "Eiffelturm entfernt. Das Personal ist höflich und die Zimmer sind sauber.\n\n" +
+                    "Negativ:\n\n" +
+                    "Leider war das Zimmer, in dem wir untergebracht waren, sehr klein und das Bad war veraltet. " +
+                    "Außerdem war das Frühstück einfach und der Service war oft unterdurchschnittlich.",
+                correctAnswer: "KI-generiert",
+                explanationIfCorrect: "Begründung: Sehr ausführliche Bewertung mit individuellen Satzanfängen.",
+                explanationIfWrong: "Begründung: Sehr ausführliche Bewertung mit individuellen Satzanfängen."
+            },
+            {
+                variantId: "hotel_review_05",
+                information:
+                    "Positiv:\n\n" +
+                    "Hervorragende Lage, in der Nähe vieler Sehenswürdigkeiten. Der Service war ausgezeichnet, " +
+                    "und das Frühstück war vielfältig und lecker.\n\n" +
+                    "Negativ:\n\n" +
+                    "Die Zimmer zur Straße hin können etwas laut sein, aber mit Ohrenstöpsel ist es in Ordnung.",
+                correctAnswer: "KI-generiert",
+                explanationIfCorrect: "Begründung: Enthält pragmatische Reisetipps und einen leichten Grammatikfehler.",
+                explanationIfWrong: "Begründung: Enthält pragmatische Reisetipps und einen leichten Grammatikfehler."
+            }
+        ]
+    },
 
-        aiRecommendation: "von einem Menschen",
+    /* Taskgruppe: Emotionserkennung (Foto) */
+    {
+        groupId: "emotion",
+
+        type: "photo",
+
+        prompt:
+            "Betrachten Sie das folgende Foto. " +
+            "Welche Emotion drückt das Gesicht der Person primär aus?",
 
         chatIntro:
             "Bitte geben Sie Ihre Einschätzung " +
-            "zur Herkunft der Rezension ein."
+            "zu der abgebildeten Emotion ein.",
+
+        options: [
+            "Überraschung",
+            "Besorgnis"
+        ],
+
+        variants: [
+            {
+                variantId: "emotion_01",
+                image: "images/placeholder.jpg",
+                correctAnswer: "Überraschung",
+                explanationIfCorrect: "[Platzhalter-Begründung]",
+                explanationIfWrong: "[Platzhalter-Begründung]"
+            },
+            /* TODO: Platzhalter-Varianten durch echte Fotos/Inhalte ersetzen */
+            {
+                variantId: "emotion_02",
+                image: "images/placeholder.jpg",
+                correctAnswer: "Überraschung",
+                explanationIfCorrect: "[Platzhalter-Begründung]",
+                explanationIfWrong: "[Platzhalter-Begründung]"
+            },
+            {
+                variantId: "emotion_03",
+                image: "images/placeholder.jpg",
+                correctAnswer: "Besorgnis",
+                explanationIfCorrect: "[Platzhalter-Begründung]",
+                explanationIfWrong: "[Platzhalter-Begründung]"
+            },
+            {
+                variantId: "emotion_04",
+                image: "images/placeholder.jpg",
+                correctAnswer: "Überraschung",
+                explanationIfCorrect: "[Platzhalter-Begründung]",
+                explanationIfWrong: "[Platzhalter-Begründung]"
+            },
+            {
+                variantId: "emotion_05",
+                image: "images/placeholder.jpg",
+                correctAnswer: "Besorgnis",
+                explanationIfCorrect: "[Platzhalter-Begründung]",
+                explanationIfWrong: "[Platzhalter-Begründung]"
+            }
+        ]
+    },
+
+    /* Taskgruppe: Immobilienwerte (Foto + Tabelle) */
+    {
+        groupId: "real_estate",
+
+        type: "table",
+
+        prompt:
+            "Betrachten Sie die folgenden Informationen. " +
+            "Wie viel ist diese Immobilie wert?",
+
+        chatIntro:
+            "Bitte geben Sie Ihre Schätzung " +
+            "zum Immobilienwert ein.",
+
+        options: [
+            "weniger als 400.000€",
+            "mehr als 400.000€"
+        ],
+
+        variants: [
+            {
+                variantId: "real_estate_01",
+                image: "images/placeholder.jpg",
+                table: {
+                    headers: ["", ""],
+                    rows: [
+                        ["Ort", "Flensburg"],
+                        ["Baujahr", "1980"],
+                        ["Grundstücksfläche", "500 qm"],
+                        ["Wohnfläche", "100 qm"],
+                        ["Anzahl Zimmer", "4"],
+                        ["Stockwerke", "2"]
+                    ]
+                },
+                correctAnswer: "weniger als 400.000€",
+                explanationIfCorrect: "[Platzhalter-Begründung]",
+                explanationIfWrong: "[Platzhalter-Begründung]"
+            },
+            /* TODO: Platzhalter-Varianten durch echte Fotos/Inhalte ersetzen */
+            {
+                variantId: "real_estate_02",
+                image: "images/placeholder.jpg",
+                table: { headers: ["", ""], rows: [["Status", "Platzhalter – Inhalt folgt"]] },
+                correctAnswer: "weniger als 400.000€",
+                explanationIfCorrect: "[Platzhalter-Begründung]",
+                explanationIfWrong: "[Platzhalter-Begründung]"
+            },
+            {
+                variantId: "real_estate_03",
+                image: "images/placeholder.jpg",
+                table: { headers: ["", ""], rows: [["Status", "Platzhalter – Inhalt folgt"]] },
+                correctAnswer: "mehr als 400.000€",
+                explanationIfCorrect: "[Platzhalter-Begründung]",
+                explanationIfWrong: "[Platzhalter-Begründung]"
+            },
+            {
+                variantId: "real_estate_04",
+                image: "images/placeholder.jpg",
+                table: { headers: ["", ""], rows: [["Status", "Platzhalter – Inhalt folgt"]] },
+                correctAnswer: "weniger als 400.000€",
+                explanationIfCorrect: "[Platzhalter-Begründung]",
+                explanationIfWrong: "[Platzhalter-Begründung]"
+            },
+            {
+                variantId: "real_estate_05",
+                image: "images/placeholder.jpg",
+                table: { headers: ["", ""], rows: [["Status", "Platzhalter – Inhalt folgt"]] },
+                correctAnswer: "mehr als 400.000€",
+                explanationIfCorrect: "[Platzhalter-Begründung]",
+                explanationIfWrong: "[Platzhalter-Begründung]"
+            }
+        ]
+    },
+
+    /* Taskgruppe: Regenvorhersage (Tabelle) */
+    {
+        groupId: "rain_forecast",
+
+        type: "table",
+
+        prompt:
+            "Betrachten Sie die folgenden Wetterdaten. " +
+            "Wird es an diesem Ort morgen regnen?",
+
+        chatIntro:
+            "Bitte geben Sie Ihre Einschätzung " +
+            "zur Regenwahrscheinlichkeit ein.",
+
+        options: [
+            "Regen",
+            "Kein Regen"
+        ],
+
+        /* TODO: Platzhalter-Varianten durch echte Inhalte ersetzen */
+        variants: [
+            {
+                variantId: "rain_forecast_01",
+                table: { headers: ["", ""], rows: [["Status", "Platzhalter – Inhalt folgt"]] },
+                correctAnswer: "Regen",
+                explanationIfCorrect: "[Platzhalter-Begründung]",
+                explanationIfWrong: "[Platzhalter-Begründung]"
+            },
+            {
+                variantId: "rain_forecast_02",
+                table: { headers: ["", ""], rows: [["Status", "Platzhalter – Inhalt folgt"]] },
+                correctAnswer: "Regen",
+                explanationIfCorrect: "[Platzhalter-Begründung]",
+                explanationIfWrong: "[Platzhalter-Begründung]"
+            },
+            {
+                variantId: "rain_forecast_03",
+                table: { headers: ["", ""], rows: [["Status", "Platzhalter – Inhalt folgt"]] },
+                correctAnswer: "Kein Regen",
+                explanationIfCorrect: "[Platzhalter-Begründung]",
+                explanationIfWrong: "[Platzhalter-Begründung]"
+            },
+            {
+                variantId: "rain_forecast_04",
+                table: { headers: ["", ""], rows: [["Status", "Platzhalter – Inhalt folgt"]] },
+                correctAnswer: "Regen",
+                explanationIfCorrect: "[Platzhalter-Begründung]",
+                explanationIfWrong: "[Platzhalter-Begründung]"
+            },
+            {
+                variantId: "rain_forecast_05",
+                table: { headers: ["", ""], rows: [["Status", "Platzhalter – Inhalt folgt"]] },
+                correctAnswer: "Kein Regen",
+                explanationIfCorrect: "[Platzhalter-Begründung]",
+                explanationIfWrong: "[Platzhalter-Begründung]"
+            }
+        ]
     }
 
 ];
+
+/* Fisher-Yates Shuffle (mischt eine Kopie des Arrays) */
+
+function shuffle(array) {
+
+    const shuffled = [...array];
+
+    for (let i = shuffled.length - 1; i > 0; i--) {
+
+        const j = Math.floor(Math.random() * (i + 1));
+
+        [shuffled[i], shuffled[j]] =
+            [shuffled[j], shuffled[i]];
+    }
+
+    return shuffled;
+}
+
+/* Session-Aufgabenliste aufbauen:
+   - Reihenfolge der Taskgruppen wird randomisiert
+   - Reihenfolge der 5 Varianten je Gruppe wird randomisiert
+   - Innerhalb jeder Gruppe empfiehlt die KI in den ersten
+     3 Positionen die richtige, in den letzten 2 Positionen
+     die falsche Antwort (inkl. passender Begründung) */
+
+function buildSessionTasks(groups) {
+
+    const sessionTasks = [];
+
+    shuffle(groups).forEach(group => {
+
+        shuffle(group.variants).forEach((variant, index) => {
+
+            const groupPosition = index + 1;
+
+            const aiRecommendsCorrectly =
+                groupPosition <= 3;
+
+            const wrongAnswer =
+                group.options.find(
+                    option => option !== variant.correctAnswer
+                );
+
+            sessionTasks.push({
+
+                id: variant.variantId,
+                groupId: group.groupId,
+                groupPosition: groupPosition,
+
+                type: group.type,
+                prompt: group.prompt,
+                statement: group.statement,
+                chatIntro: group.chatIntro,
+                options: group.options,
+
+                image: variant.image,
+                table: variant.table,
+                information: variant.information,
+
+                correctAnswer: variant.correctAnswer,
+
+                aiRecommendation:
+                    aiRecommendsCorrectly
+                        ? variant.correctAnswer
+                        : wrongAnswer,
+
+                aiExplanation:
+                    aiRecommendsCorrectly
+                        ? variant.explanationIfCorrect
+                        : variant.explanationIfWrong
+            });
+        });
+    });
+
+    return sessionTasks;
+}
+
+const tasks = buildSessionTasks(taskGroups);
 
 /* Experiment-Zustand */
 
@@ -164,7 +483,7 @@ function loadTask() {
     document.getElementById(
         "task-title"
     ).textContent =
-        task.title;
+        `Aufgabe ${currentTask + 1}`;
 
     /* Aufgabenbereich */
 
@@ -179,7 +498,7 @@ function loadTask() {
 
 
     /* Aufgabentext */
-   
+
     const prompt =
         document.createElement("p");
 
@@ -190,9 +509,9 @@ function loadTask() {
         prompt
     );
 
-    /* Foto */
+    /* Foto (kann zusätzlich zu einer Tabelle auftreten, z.B. Immobilien) */
 
-    if (task.type === "photo") {
+    if (task.image) {
 
         const image =
             document.createElement("img");
@@ -213,7 +532,7 @@ function loadTask() {
 
     /* Tabelle */
 
-    if (task.type === "table") {
+    if (task.table) {
 
         const table =
             document.createElement("table");
@@ -297,7 +616,7 @@ function loadTask() {
 
     /* Text */
 
-     if (task.type === "text") {
+     if (task.information) {
 
         const informationBox =
             document.createElement("div");
@@ -397,7 +716,7 @@ function loadTask() {
     );
 }
 
-/* Antwortbuttons erzeugen */ 
+/* Antwortbuttons erzeugen */
 function createAnswerButtons(
     options
 ) {
@@ -604,6 +923,12 @@ function showAIResponse() {
                 </strong>
             </p>
 
+            ${
+                task.aiExplanation
+                    ? `<p>${escapeHtml(task.aiExplanation)}</p>`
+                    : ""
+            }
+
         </div>
 
     `;
@@ -636,11 +961,14 @@ async function saveTrial(secondAnswer) {
     console.log("task:", task);
     console.log("task.id:", task.id);
     console.log("task.type:", task.type);
+    console.log("task.groupId:", task.groupId);
+    console.log("task.groupPosition:", task.groupPosition);
     console.log("firstAnswer:", firstAnswer);
     console.log("secondAnswer:", secondAnswer);
     console.log("correctAnswer:", task.correctAnswer);
     console.log("aiRecommendation:", task.aiRecommendation);
-    
+    console.log("aiExplanation:", task.aiExplanation);
+
     const firstAnswerCorrect =
         firstAnswer === task.correctAnswer;
 
@@ -664,11 +992,20 @@ async function saveTrial(secondAnswer) {
         task_type:
             task.type,
 
+        group_id:
+            task.groupId,
+
+        group_position:
+            task.groupPosition,
+
         first_answer:
             firstAnswer,
 
         ai_recommendation:
             task.aiRecommendation,
+
+        ai_explanation:
+            task.aiExplanation,
 
         second_answer:
             secondAnswer,
@@ -692,7 +1029,7 @@ async function saveTrial(secondAnswer) {
         dataToSave
     );
 
-    
+
     const {
         error
     } = await supabaseClient
@@ -711,11 +1048,20 @@ async function saveTrial(secondAnswer) {
             task_type:
                 task.type,
 
+            group_id:
+                task.groupId,
+
+            group_position:
+                task.groupPosition,
+
             first_answer:
                 firstAnswer,
 
             ai_recommendation:
                 task.aiRecommendation,
+
+            ai_explanation:
+                task.aiExplanation,
 
             second_answer:
                 secondAnswer,
@@ -923,7 +1269,7 @@ function showCompletion() {
     ).innerHTML = `
 
         <p>
-            Sie haben alle drei Aufgaben
+            Sie haben alle ${tasks.length} Aufgaben
             erfolgreich bearbeitet.
         </p>
 
@@ -963,9 +1309,3 @@ function showCompletion() {
 /* START */
 
 loadTask();
-
-
-
-    
-    
-    
