@@ -326,8 +326,8 @@ const taskGroups = [
             "zum Immobilienwert ein.",
 
         options: [
-            "weniger als 400.000€",
-            "mehr als 400.000€"
+            "weniger als 550.000€",
+            "mehr als 550.000€"
         ],
 
         variants: [
@@ -345,7 +345,7 @@ const taskGroups = [
                         ["Grundstücksfläche in m²", "513"]
                     ]
                 },
-                correctAnswer: "mehr als 400.000€",
+                correctAnswer: "mehr als 550.000€",
                 explanationIfCorrect: "Begründung: gute Lage, hohe Grundstücksfläche",
                 explanationIfWrong: "Begründung: altes Baujahr, Schnitt als Doppelhaus"
             },
@@ -363,7 +363,7 @@ const taskGroups = [
                         ["Grundstücksfläche in m²", "716"]
                     ]
                 },
-                correctAnswer: "mehr als 400.000€",
+                correctAnswer: "mehr als 550.000€",
                 explanationIfCorrect: "Begründung: viele Zimmer, große Wohn- und Grundfläche",
                 explanationIfWrong: "Begründung: altes Baujahr, viele kleine Zimmer"
             },
@@ -381,7 +381,7 @@ const taskGroups = [
                         ["Grundstücksfläche in m²", "227"]
                     ]
                 },
-                correctAnswer: "weniger als 400.000€",
+                correctAnswer: "weniger als 550.000€",
                 explanationIfCorrect: "Begründung: geringe Grundstücksfläche, touristische Lage",
                 explanationIfWrong: "Begründung: Neubau, touristische Lage"
             },
@@ -399,7 +399,7 @@ const taskGroups = [
                         ["Grundstücksfläche in m²", "321"]
                     ]
                 },
-                correctAnswer: "mehr als 400.000€",
+                correctAnswer: "mehr als 550.000€",
                 explanationIfCorrect: "Begründung: große Wohnfläche, gehobene Ausstattung",
                 explanationIfWrong: "Begründung: Lage äußerster Stadtrand, Pool hohe laufende Kosten"
             },
@@ -417,7 +417,7 @@ const taskGroups = [
                         ["Grundstücksfläche in m²", "36"]
                     ]
                 },
-                correctAnswer: "weniger als 400.000€",
+                correctAnswer: "weniger als 550.000€",
                 explanationIfCorrect: "Begründung: historisches Baudenkmal, geringe Grundstücksfläche",
                 explanationIfWrong: "Begründung: historisches Baudenkmal, begehrte Lage"
             }
