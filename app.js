@@ -264,54 +264,93 @@ const taskGroups = [
         variants: [
             {
                 variantId: "real_estate_01",
-                image: "images/placeholder.jpg",
+                image: "images/immo-1.webp",
                 table: {
                     headers: ["", ""],
                     rows: [
-                        ["Ort", "Flensburg"],
-                        ["Baujahr", "1980"],
-                        ["Grundstücksfläche", "500 qm"],
-                        ["Wohnfläche", "100 qm"],
-                        ["Anzahl Zimmer", "4"],
-                        ["Stockwerke", "2"]
+                        ["Titel", "Wohnen mit Gartenidylle – Gepflegtes Ein-/Zweifamilienhaus in begehrter Lage von Hamburg-Stellingen!"],
+                        ["Baujahr", "1957"],
+                        ["Ort", "Stellingen, 22525 Hamburg"],
+                        ["Zimmer", "4"],
+                        ["Wohnfläche in m²", "123,38"],
+                        ["Grundstücksfläche in m²", "513"]
                     ]
                 },
-                correctAnswer: "weniger als 400.000€",
-                explanationIfCorrect: "[Platzhalter-Begründung]",
-                explanationIfWrong: "[Platzhalter-Begründung]"
+                correctAnswer: "mehr als 400.000€",
+                explanationIfCorrect: "Begründung: gute Lage, hohe Grundstücksfläche",
+                explanationIfWrong: "Begründung: altes Baujahr, Schnitt als Doppelhaus"
             },
-            /* TODO: Platzhalter-Varianten durch echte Fotos/Inhalte ersetzen */
             {
                 variantId: "real_estate_02",
-                image: "images/placeholder.jpg",
-                table: { headers: ["", ""], rows: [["Status", "Platzhalter – Inhalt folgt"]] },
-                correctAnswer: "weniger als 400.000€",
-                explanationIfCorrect: "[Platzhalter-Begründung]",
-                explanationIfWrong: "[Platzhalter-Begründung]"
+                image: "images/immo-2.webp",
+                table: {
+                    headers: ["", ""],
+                    rows: [
+                        ["Titel", "Viel Platz für neue Ideen – freistehendes Ein- oder Zweifamilienhaus mit Doppelgarage und Carport"],
+                        ["Baujahr", "1965"],
+                        ["Ort", "Rosellen, 41470 Neuss"],
+                        ["Zimmer", "7"],
+                        ["Wohnfläche in m²", "177,28"],
+                        ["Grundstücksfläche in m²", "716"]
+                    ]
+                },
+                correctAnswer: "mehr als 400.000€",
+                explanationIfCorrect: "Begründung: viele Zimmer, große Wohn- und Grundfläche",
+                explanationIfWrong: "Begründung: altes Baujahr, viele kleine Zimmer"
             },
             {
                 variantId: "real_estate_03",
-                image: "images/placeholder.jpg",
-                table: { headers: ["", ""], rows: [["Status", "Platzhalter – Inhalt folgt"]] },
-                correctAnswer: "mehr als 400.000€",
-                explanationIfCorrect: "[Platzhalter-Begründung]",
-                explanationIfWrong: "[Platzhalter-Begründung]"
+                image: "images/immo-3.webp",
+                table: {
+                    headers: ["", ""],
+                    rows: [
+                        ["Titel", "145m² Familienglück: Platz für die ganze Familie!"],
+                        ["Baujahr", "2026"],
+                        ["Ort", "Travemünde, 23570 Lübeck"],
+                        ["Zimmer", "5"],
+                        ["Wohnfläche in m²", "145"],
+                        ["Grundstücksfläche in m²", "227"]
+                    ]
+                },
+                correctAnswer: "weniger als 400.000€",
+                explanationIfCorrect: "Begründung: geringe Grundstücksfläche, touristische Lage",
+                explanationIfWrong: "Begründung: Neubau, touristische Lage"
             },
             {
                 variantId: "real_estate_04",
-                image: "images/placeholder.jpg",
-                table: { headers: ["", ""], rows: [["Status", "Platzhalter – Inhalt folgt"]] },
-                correctAnswer: "weniger als 400.000€",
-                explanationIfCorrect: "[Platzhalter-Begründung]",
-                explanationIfWrong: "[Platzhalter-Begründung]"
+                image: "images/immo-6.webp",
+                table: {
+                    headers: ["", ""],
+                    rows: [
+                        ["Titel", "Exklusiv saniertes Wohnhaus mit Indoor-Pool, Wellnessbereich und hochwertiger Ausstattung"],
+                        ["Baujahr", "1972"],
+                        ["Ort", "Urdenbach, 40593 Düsseldorf"],
+                        ["Zimmer", "5"],
+                        ["Wohnfläche in m²", "276"],
+                        ["Grundstücksfläche in m²", "321"]
+                    ]
+                },
+                correctAnswer: "mehr als 400.000€",
+                explanationIfCorrect: "Begründung: große Wohnfläche, gehobene Ausstattung",
+                explanationIfWrong: "Begründung: Lage äußerster Stadtrand, Pool hohe laufende Kosten"
             },
             {
                 variantId: "real_estate_05",
-                image: "images/placeholder.jpg",
-                table: { headers: ["", ""], rows: [["Status", "Platzhalter – Inhalt folgt"]] },
-                correctAnswer: "mehr als 400.000€",
-                explanationIfCorrect: "[Platzhalter-Begründung]",
-                explanationIfWrong: "[Platzhalter-Begründung]"
+                image: "images/immo-7.webp",
+                table: {
+                    headers: ["", ""],
+                    rows: [
+                        ["Titel", "Traumhaftes Altstadthaus mit dem ganz besonderen Flair in der Lübecker Altstadt"],
+                        ["Baujahr", "1600"],
+                        ["Ort", "Innenstadt, 23552 Lübeck"],
+                        ["Zimmer", "4"],
+                        ["Wohnfläche in m²", "93"],
+                        ["Grundstücksfläche in m²", "36"]
+                    ]
+                },
+                correctAnswer: "weniger als 400.000€",
+                explanationIfCorrect: "Begründung: historisches Baudenkmal, geringe Grundstücksfläche",
+                explanationIfWrong: "Begründung: historisches Baudenkmal, begehrte Lage"
             }
         ]
     },
