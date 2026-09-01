@@ -87,8 +87,6 @@ body {
     background: #f0f0f0;
 
     line-height: 1.5;
-    /* TODO */
-    white-space: pre-line;
 }
 
 .user-message {
@@ -277,6 +275,8 @@ body {
     border-left: 4px solid #555;
 
     line-height: 1.6;
+    /* TODO */
+    white-space: pre-line;
 }
 
 
