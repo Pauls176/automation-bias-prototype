@@ -59,42 +59,111 @@ const taskGroups = [
             "Kein gutes Match"
         ],
 
-        /* TODO: Platzhalter-Varianten durch echte Inhalte ersetzen */
         variants: [
             {
                 variantId: "speed_dating_01",
-                table: { headers: ["", ""], rows: [["Status", "Platzhalter – Inhalt folgt"]] },
+                table: {
+                    headers: ["Merkmal", "Person A", "Person B"],
+                    rows: [
+                        ["Geschlecht", "Frau", "Mann"],
+                        ["Alter", "21", "31"],
+                        ["Studium", "Jura", "Betriebswirtschaftslehre"],
+                        ["Freizeitaktivitäten", "mehrmals/Woche", "mehrmals/Woche"],
+                        ["Attraktivitätsbewertung (der/s Partner/in)", "7", "7"],
+                        ["Aufrichtigkeitsbewertung (der/s Partner/in)", "5", "10"],
+                        ["Intelligenzbewertung (der/s Partner/in)", "7", "10"],
+                        ["Unterhaltsamkeitsbewertung (der/s Partner/in)", "7", "2"],
+                        ["Ambitionsbewertung (der/s Partner/in)", "7", "8"],
+                        ["Interessenähnlichkeit", "73.5%", "73.5%"]
+                    ]
+                },
                 correctAnswer: "Gutes Match",
-                explanationIfCorrect: "[Platzhalter-Begründung]",
-                explanationIfWrong: "[Platzhalter-Begründung]"
+                explanationIfCorrect: "Begründung: übereinstimmende Häufigkeit der Freizeitaktivitäten, hohe Interessenähnlichkeit",
+                explanationIfWrong: "Begründung: hohe Altersdifferenz, sehr geringe Unterhaltsamkeitsbewertung durch Partner A"
             },
             {
                 variantId: "speed_dating_02",
-                table: { headers: ["", ""], rows: [["Status", "Platzhalter – Inhalt folgt"]] },
+                table: {
+                    headers: ["Merkmal", "Person A", "Person B"],
+                    rows: [
+                        ["Geschlecht", "Frau", "Mann"],
+                        ["Alter", "22", "27"],
+                        ["Studium", "Kommunikationswissenschaften", "Chemie"],
+                        ["Freizeitaktivitäten", "mehrmals/Woche", "einmal/Woche"],
+                        ["Attraktivitätsbewertung (der/s Partner/in)", "7", "9"],
+                        ["Aufrichtigkeitsbewertung (der/s Partner/in)", "7", "8"],
+                        ["Intelligenzbewertung (der/s Partner/in)", "7", "7"],
+                        ["Unterhaltsamkeitsbewertung (der/s Partner/in)", "8", "8"],
+                        ["Ambitionsbewertung (der/s Partner/in)", "7", "5"],
+                        ["Interessenähnlichkeit", "57%", "57%"]
+                    ]
+                },
                 correctAnswer: "Gutes Match",
-                explanationIfCorrect: "[Platzhalter-Begründung]",
-                explanationIfWrong: "[Platzhalter-Begründung]"
+                explanationIfCorrect: "Begründung: mäßig bis hohe Partner-Bewertungen, keine hohe Altersdifferenz",
+                explanationIfWrong: "Begründung: unterschiedliche Studienprofile, keine Übereinstimmung in der Häufigkeit der Freizeitaktivitäten"
             },
             {
                 variantId: "speed_dating_03",
-                table: { headers: ["", ""], rows: [["Status", "Platzhalter – Inhalt folgt"]] },
-                correctAnswer: "Gutes Match",
-                explanationIfCorrect: "[Platzhalter-Begründung]",
-                explanationIfWrong: "[Platzhalter-Begründung]"
+                table: {
+                    headers: ["Merkmal", "Person A", "Person B"],
+                    rows: [
+                        ["Geschlecht", "Frau", "Mann"],
+                        ["Alter", "28", "32"],
+                        ["Studium", "Internationale Beziehungen/Betriebswirtschaftslehre", "Psychologie"],
+                        ["Freizeitaktivitäten", "zweimal/Woche", "zweimal/Monat"],
+                        ["Attraktivitätsbewertung (der/s Partner/in)", "5", "7"],
+                        ["Aufrichtigkeitsbewertung (der/s Partner/in)", "8", "7"],
+                        ["Intelligenzbewertung (der/s Partner/in)", "6", "10"],
+                        ["Unterhaltsamkeitsbewertung (der/s Partner/in)", "7", "—"],
+                        ["Ambitionsbewertung (der/s Partner/in)", "7", "8"],
+                        ["Interessenähnlichkeit", "58%", "58%"]
+                    ]
+                },
+                correctAnswer: "Kein gutes Match",
+                explanationIfCorrect: "Begründung: stark unterschiedliche Partner-Bewertungen, keine Übereinstimmung in der Häufigkeit der Freizeitaktivitäten",
+                explanationIfWrong: "Begründung: geringe Altersdifferenz, mäßig bis hohe Partner-Bewertungen"
             },
             {
                 variantId: "speed_dating_04",
-                table: { headers: ["", ""], rows: [["Status", "Platzhalter – Inhalt folgt"]] },
+                table: {
+                    headers: ["Merkmal", "Person A", "Person B"],
+                    rows: [
+                        ["Geschlecht", "Frau", "Mann"],
+                        ["Alter", "25", "24"],
+                        ["Studium", "Soziale Arbeit", "Biomedizinisch/Technik"],
+                        ["Freizeitaktivitäten", "einmal/Woche", "einmal/Woche"],
+                        ["Attraktivitätsbewertung (der/s Partner/in)", "8", "4"],
+                        ["Aufrichtigkeitsbewertung (der/s Partner/in)", "6", "8"],
+                        ["Intelligenzbewertung (der/s Partner/in)", "7", "7"],
+                        ["Unterhaltsamkeitsbewertung (der/s Partner/in)", "7", "6"],
+                        ["Ambitionsbewertung (der/s Partner/in)", "6", "6"],
+                        ["Interessenähnlichkeit", "59.5%", "59.5%"]
+                    ]
+                },
                 correctAnswer: "Kein gutes Match",
-                explanationIfCorrect: "[Platzhalter-Begründung]",
-                explanationIfWrong: "[Platzhalter-Begründung]"
+                explanationIfCorrect: "Begründung: mittlere Interessenähnlichkeit, unterschiedliche Studienprofile",
+                explanationIfWrong: "Begründung: geringe Altersdifferenz, Übereinstimmung in der Häufigkeit der Freizeitaktivitäten"
             },
             {
                 variantId: "speed_dating_05",
-                table: { headers: ["", ""], rows: [["Status", "Platzhalter – Inhalt folgt"]] },
-                correctAnswer: "Kein gutes Match",
-                explanationIfCorrect: "[Platzhalter-Begründung]",
-                explanationIfWrong: "[Platzhalter-Begründung]"
+                table: {
+                    headers: ["Merkmal", "Person A", "Person B"],
+                    rows: [
+                        ["Geschlecht", "Frau", "Mann"],
+                        ["Alter", "25", "28"],
+                        ["Studium", "Internationale Beziehungen/Betriebswirtschaftslehre", "Biomedizin"],
+                        ["Freizeitaktivitäten", "zweimal/Woche", "einmal/Woche"],
+                        ["Attraktivitätsbewertung (der/s Partner/in)", "8", "7"],
+                        ["Aufrichtigkeitsbewertung (der/s Partner/in)", "8", "10"],
+                        ["Intelligenzbewertung (der/s Partner/in)", "6", "8"],
+                        ["Unterhaltsamkeitsbewertung (der/s Partner/in)", "6", "9"],
+                        ["Ambitionsbewertung (der/s Partner/in)", "6", "—"],
+                        ["Interessenähnlichkeit", "66%", "66%"]
+                    ]
+                },
+                correctAnswer: "Gutes Match",
+                explanationIfCorrect: "Begründung: recht hohe Interessensähnlichkeit, geringe Altersdifferenz",
+                explanationIfWrong: "Begründung: stark unterschiedliche Partner-Bewertungen, unterschiedliche Studienprofile"
             }
         ]
     },
