@@ -428,11 +428,11 @@ const taskGroups = [
         type: "table",
 
         prompt:
-            "Betrachten Sie die folgenden Wetterdaten. " +
-            "Wird es an diesem Ort morgen regnen?",
+            "Betrachten Sie die folgenden Wetterdaten aus Hamburg (Fuhlsbüttel). " +
+            "Wird es an diesem Tag dort regnen?",
 
         chatIntro:
-            "Bitte geben Sie Ihre Einschätzung " +
+            "Bitte geben Sie eine Prognose " +
             "zur Regenwahrscheinlichkeit ein.",
 
         options: [
@@ -440,42 +440,81 @@ const taskGroups = [
             "Kein Regen"
         ],
 
-        /* TODO: Platzhalter-Varianten durch echte Inhalte ersetzen */
         variants: [
             {
                 variantId: "rain_forecast_01",
-                table: { headers: ["", ""], rows: [["Status", "Platzhalter – Inhalt folgt"]] },
-                correctAnswer: "Regen",
-                explanationIfCorrect: "[Platzhalter-Begründung]",
-                explanationIfWrong: "[Platzhalter-Begründung]"
+                table: {
+                    headers: ["", ""],
+                    rows: [
+                        ["Datum", "18.03.2026"],
+                        ["Ø Temperatur", "8,0 °C"],
+                        ["Sonnenstunden", "11,1 h"],
+                        ["Niederschlag (der vorigen 3 Tage)", "3,4 mm"]
+                    ]
+                },
+                correctAnswer: "Kein Regen",
+                explanationIfCorrect: "Begründung: Viele Sonnenstunden sprechen gegen Regen.",
+                explanationIfWrong: "Begründung: Niederschlag in den letzten 3 Tagen spricht für Regen."
             },
             {
                 variantId: "rain_forecast_02",
-                table: { headers: ["", ""], rows: [["Status", "Platzhalter – Inhalt folgt"]] },
+                table: {
+                    headers: ["", ""],
+                    rows: [
+                        ["Datum", "10.08.2026"],
+                        ["Ø Temperatur", "18,7 °C"],
+                        ["Sonnenstunden", "4,4 h"],
+                        ["Niederschlag (der vorigen 3 Tage)", "0,0 mm"]
+                    ]
+                },
                 correctAnswer: "Regen",
-                explanationIfCorrect: "[Platzhalter-Begründung]",
-                explanationIfWrong: "[Platzhalter-Begründung]"
+                explanationIfCorrect: "Begründung: Wenig Sonnenstunden sprechen für Regen.",
+                explanationIfWrong: "Begründung: Niederschlag in den letzten 3 Tagen spricht gegen Regen."
             },
             {
                 variantId: "rain_forecast_03",
-                table: { headers: ["", ""], rows: [["Status", "Platzhalter – Inhalt folgt"]] },
-                correctAnswer: "Kein Regen",
-                explanationIfCorrect: "[Platzhalter-Begründung]",
-                explanationIfWrong: "[Platzhalter-Begründung]"
+                table: {
+                    headers: ["", ""],
+                    rows: [
+                        ["Datum", "29.06.2026"],
+                        ["Ø Temperatur", "21,5 °C"],
+                        ["Sonnenstunden", "7,6 h"],
+                        ["Niederschlag (der vorigen 3 Tage)", "20,9 mm"]
+                    ]
+                },
+                correctAnswer: "Regen",
+                explanationIfCorrect: "Begründung: Niederschlag in den letzten 3 Tagen spricht für Regen.",
+                explanationIfWrong: "Begründung: Temperatur und Sonnenstunden sprechen gegen Regen."
             },
             {
                 variantId: "rain_forecast_04",
-                table: { headers: ["", ""], rows: [["Status", "Platzhalter – Inhalt folgt"]] },
-                correctAnswer: "Regen",
-                explanationIfCorrect: "[Platzhalter-Begründung]",
-                explanationIfWrong: "[Platzhalter-Begründung]"
+                table: {
+                    headers: ["", ""],
+                    rows: [
+                        ["Datum", "24.07.2026"],
+                        ["Ø Temperatur", "16,4 °C"],
+                        ["Sonnenstunden", "1,1 h"],
+                        ["Niederschlag (der vorigen 3 Tage)", "2,1 mm"]
+                    ]
+                },
+                correctAnswer: "Kein Regen",
+                explanationIfCorrect: "Begründung: Niederschlag in den letzten 3 Tagen spricht gegen Regen.",
+                explanationIfWrong: "Begründung: Temperatur und Sonnenstunden sprechen für Regen."
             },
             {
                 variantId: "rain_forecast_05",
-                table: { headers: ["", ""], rows: [["Status", "Platzhalter – Inhalt folgt"]] },
-                correctAnswer: "Kein Regen",
-                explanationIfCorrect: "[Platzhalter-Begründung]",
-                explanationIfWrong: "[Platzhalter-Begründung]"
+                table: {
+                    headers: ["", ""],
+                    rows: [
+                        ["Datum", "30.07.2026"],
+                        ["Ø Temperatur", "25,4 °C"],
+                        ["Sonnenstunden", "10,2 h"],
+                        ["Niederschlag (der vorigen 3 Tage)", "7,2 mm"]
+                    ]
+                },
+                correctAnswer: "Regen",
+                explanationIfCorrect: "Begründung: Niederschlag in den letzten 3 Tagen spricht für Regen.",
+                explanationIfWrong: "Begründung: Temperatur und Sonnenstunden sprechen gegen Regen."
             }
         ]
     }
