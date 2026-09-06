@@ -48,15 +48,15 @@ const taskGroups = [
 
         prompt:
             "Betrachten Sie die folgenden Informationen zu einem " +
-            "Speed-Dating-Paar. Handelt es sich " +
-            "voraussichtlich um ein gutes Match?",
+            "Speed-Dating-Paar. Haben die beiden Personen " +
+            "sich für ein zweites Date entschieden?",
 
         chatIntro:
-            "Was glauben Sie? Passt dieses Paar gut zusammen?",
+            "Was glauben Sie? Wird dieses Paar ein zweites Date haben?",
 
         options: [
-            "Gutes Match",
-            "Kein gutes Match"
+            "Ja, zum zweiten Date",
+            "Nein, kein zweites Date"
         ],
 
         variants: [
@@ -77,7 +77,7 @@ const taskGroups = [
                         ["Interessenähnlichkeit", "73.5%", "73.5%"]
                     ]
                 },
-                correctAnswer: "Gutes Match",
+                correctAnswer: "Ja, zum zweiten Date",
                 explanationIfCorrect: "Begründung: übereinstimmende Häufigkeit der Freizeitaktivitäten, hohe Interessenähnlichkeit",
                 explanationIfWrong: "Begründung: hohe Altersdifferenz, sehr geringe Unterhaltsamkeitsbewertung durch Partner A"
             },
@@ -98,7 +98,7 @@ const taskGroups = [
                         ["Interessenähnlichkeit", "57%", "57%"]
                     ]
                 },
-                correctAnswer: "Gutes Match",
+                correctAnswer: "Ja, zum zweiten Date",
                 explanationIfCorrect: "Begründung: mäßig bis hohe Partner-Bewertungen, keine hohe Altersdifferenz",
                 explanationIfWrong: "Begründung: unterschiedliche Studienprofile, keine Übereinstimmung in der Häufigkeit der Freizeitaktivitäten"
             },
@@ -119,7 +119,7 @@ const taskGroups = [
                         ["Interessenähnlichkeit", "58%", "58%"]
                     ]
                 },
-                correctAnswer: "Kein gutes Match",
+                correctAnswer: "Nein, kein zweites Date",
                 explanationIfCorrect: "Begründung: stark unterschiedliche Partner-Bewertungen, keine Übereinstimmung in der Häufigkeit der Freizeitaktivitäten",
                 explanationIfWrong: "Begründung: geringe Altersdifferenz, mäßig bis hohe Partner-Bewertungen"
             },
@@ -140,7 +140,7 @@ const taskGroups = [
                         ["Interessenähnlichkeit", "59.5%", "59.5%"]
                     ]
                 },
-                correctAnswer: "Kein gutes Match",
+                correctAnswer: "Nein, kein zweites Date",
                 explanationIfCorrect: "Begründung: mittlere Interessenähnlichkeit, unterschiedliche Studienprofile",
                 explanationIfWrong: "Begründung: geringe Altersdifferenz, Übereinstimmung in der Häufigkeit der Freizeitaktivitäten"
             },
@@ -161,7 +161,7 @@ const taskGroups = [
                         ["Interessenähnlichkeit", "66%", "66%"]
                     ]
                 },
-                correctAnswer: "Gutes Match",
+                correctAnswer: "Ja, zum zweiten Date",
                 explanationIfCorrect: "Begründung: recht hohe Interessensähnlichkeit, geringe Altersdifferenz",
                 explanationIfWrong: "Begründung: stark unterschiedliche Partner-Bewertungen, unterschiedliche Studienprofile"
             }
