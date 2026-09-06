@@ -178,12 +178,9 @@ const taskGroups = [
             "Lesen Sie den folgenden Text. " +
             "Wurde diese Hotelrezension von einem Menschen verfasst oder ist sie KI-generiert?",
 
-        statement:
-            "Von wem wurde diese Rezension verfasst?",
-
         chatIntro:
-            "Bitte geben Sie Ihre Einschätzung " +
-            "zur Herkunft der Rezension ein.",
+            "Wurde diese Rezension von einem Menschen " +
+            "verfasst oder ist sie KI-generiert?",
 
         options: [
             "von einem Menschen",
@@ -535,7 +532,6 @@ function buildSessionTasks(groups) {
 
                 type: group.type,
                 prompt: group.prompt,
-                statement: group.statement,
                 chatIntro: group.chatIntro,
                 options: group.options,
 
@@ -737,22 +733,6 @@ function loadTask() {
 
         taskDescription.appendChild(
             informationBox
-        );
-
-
-        // Aussage
-
-        const statement =
-            document.createElement("p");
-
-        statement.className =
-            "task-statement";
-
-        statement.textContent =
-            task.statement;
-
-        taskDescription.appendChild(
-            statement
         );
     }
 

@@ -280,19 +280,6 @@ body {
 }
 
 
-/* Aussage */
-
-.task-statement {
-    max-width: 700px;
-
-    margin: 24px auto;
-
-    font-weight: 600;
-
-    line-height: 1.5;
-}
-
-
 /* Smartphone */
 
 @media (max-width: 600px) {
