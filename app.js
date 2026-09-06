@@ -48,11 +48,11 @@ const taskGroups = [
 
         prompt:
             "Betrachten Sie die folgenden Informationen zu einem " +
-            "potenziellen Speed-Dating-Partner. Handelt es sich " +
+            "Speed-Dating-Paar. Handelt es sich " +
             "voraussichtlich um ein gutes Match?",
 
         chatIntro:
-            "Bitte geben Sie Ihre Einschätzung zum Match ab.",
+            "Was glauben Sie? Passt dieses Paar gut zusammen?",
 
         options: [
             "Gutes Match",
@@ -628,7 +628,7 @@ function loadTask() {
             task.image;
 
         image.alt =
-            "Foto zur Aufgabe";
+            "Foto derzeit nicht verfügbar";
 
         image.className =
             "task-image";
