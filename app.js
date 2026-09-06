@@ -429,7 +429,7 @@ const taskGroups = [
 
         prompt:
             "Betrachten Sie die folgenden Wetterdaten aus Hamburg (Fuhlsbüttel). " +
-            "Wird es an diesem Tag dort regnen?",
+            "Hat es an diesem Tag dort geregnet?",
 
         chatIntro:
             "Bitte geben Sie eine Prognose " +
