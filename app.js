@@ -626,6 +626,103 @@ let firstAnswer = null;
 
 let waitingForSecondAnswer = false;
 
+/* Erzeugt ein <table>-Element aus Kopf- und Datenzeilen.
+   Enthält eine Zeile weniger Zellen als Kopfspalten vorhanden sind
+   (z.B. Interessenähnlichkeit), spannt die letzte Zelle über die
+   verbleibenden Spalten. */
+
+function buildDataTable(tableData, className) {
+
+    const table =
+        document.createElement("table");
+
+    table.className =
+        className;
+
+
+    // Tabellenkopf
+
+    const thead =
+        document.createElement("thead");
+
+    const headerRow =
+        document.createElement("tr");
+
+    tableData.headers.forEach(
+        header => {
+
+            const th =
+                document.createElement("th");
+
+            th.textContent =
+                header;
+
+            headerRow.appendChild(
+                th
+            );
+        }
+    );
+
+    thead.appendChild(
+        headerRow
+    );
+
+    table.appendChild(
+        thead
+    );
+
+
+    // Tabellenkörper
+
+    const tbody =
+        document.createElement("tbody");
+
+    tableData.rows.forEach(
+        row => {
+
+            const tr =
+                document.createElement("tr");
+
+            row.forEach(
+                (cell, index) => {
+
+                    const td =
+                        document.createElement("td");
+
+                    td.textContent =
+                        cell;
+
+                    const isLastCell =
+                        index === row.length - 1;
+
+                    const missingCells =
+                        tableData.headers.length - row.length;
+
+                    if (isLastCell && missingCells > 0) {
+
+                        td.colSpan =
+                            missingCells + 1;
+                    }
+
+                    tr.appendChild(
+                        td
+                    );
+                }
+            );
+
+            tbody.appendChild(
+                tr
+            );
+        }
+    );
+
+    table.appendChild(
+        tbody
+    );
+
+    return table;
+}
+
 /* Aufgabe laden */
 
 function loadTask() {
@@ -697,83 +794,11 @@ function loadTask() {
 
     if (task.table) {
 
-        const table =
-            document.createElement("table");
-
-        table.className =
-            "task-table";
-
-
-        // Tabellenkopf
-
-        const thead =
-            document.createElement("thead");
-
-        const headerRow =
-            document.createElement("tr");
-
-        task.table.headers.forEach(
-            header => {
-
-                const th =
-                    document.createElement("th");
-
-                th.textContent =
-                    header;
-
-                headerRow.appendChild(
-                    th
-                );
-            }
-        );
-
-        thead.appendChild(
-            headerRow
-        );
-
-        table.appendChild(
-            thead
-        );
-
-
-        // Tabellenkörper
-
-        const tbody =
-            document.createElement("tbody");
-
-        task.table.rows.forEach(
-            row => {
-
-                const tr =
-                    document.createElement("tr");
-
-                row.forEach(
-                    cell => {
-
-                        const td =
-                            document.createElement("td");
-
-                        td.textContent =
-                            cell;
-
-                        tr.appendChild(
-                            td
-                        );
-                    }
-                );
-
-                tbody.appendChild(
-                    tr
-                );
-            }
-        );
-
-        table.appendChild(
-            tbody
-        );
-
         taskDescription.appendChild(
-            table
+            buildDataTable(
+                task.table,
+                "task-table"
+            )
         );
     }
 
