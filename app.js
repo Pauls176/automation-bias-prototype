@@ -13,6 +13,16 @@ const supabaseClient =
     );
 
 
+/* LimeSurvey-Anbindung: Rückleitungs-Umfrage nach Abschluss des Prototyps */
+
+// TODO: URL der Hauptstudie eintragen (derzeit noch die der Pilotstudie)
+const EXIT_SURVEY_URL =
+    "https://studentische-umfragen.uni-hamburg.de/index.php/832672";
+
+const EXIT_REDIRECT_DELAY_MS =
+    2000;
+
+
 /* Teilnehmer-ID: im Echtbetrieb kommt sie per ?id=... von LimeSurvey.
    Testmodus (lokal, file://, oder ?test=1) erlaubt den Durchlauf ohne
    LimeSurvey und erzeugt stattdessen eine zufällige Test-ID. */
@@ -1935,7 +1945,7 @@ function nextTask() {
 }
 
 
-/* Bewertungsblock starten: zuerst dessen Einleitung */
+/* Für Testing: Direkt zum Bewertungsblock springen */
 
 function startRatingBlock() {
 
@@ -2274,7 +2284,11 @@ function showCompletion() {
             <div class="message-content">
 
                 <p>
-                    Vielen Dank für Ihre Teilnahme.
+                    ${
+                        isTestMode ?
+                            "Vielen Dank für Ihre Teilnahme. (Testmodus – keine Weiterleitung.)" :
+                            "Vielen Dank für Ihre Teilnahme. Sie werden gleich zur Umfrage zurückgeleitet …"
+                    }
                 </p>
 
             </div>
@@ -2293,6 +2307,23 @@ function showCompletion() {
         0,
         0
     );
+
+
+    if (!isTestMode) {
+
+        setTimeout(
+            () => {
+
+                window.location.href =
+                    EXIT_SURVEY_URL +
+                    "?id=" +
+                    encodeURIComponent(
+                        participantId
+                    );
+            },
+            EXIT_REDIRECT_DELAY_MS
+        );
+    }
 }
 
 
