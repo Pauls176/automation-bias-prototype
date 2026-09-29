@@ -1537,19 +1537,6 @@ async function saveTrial(secondAnswer) {
 
     const task = tasks[currentTask];
 
-    console.log("========== SAVE TRIAL ==========");
-    console.log("currentTask:", currentTask);
-    console.log("task:", task);
-    console.log("task.id:", task.id);
-    console.log("task.type:", task.type);
-    console.log("task.groupId:", task.groupId);
-    console.log("task.groupPosition:", task.groupPosition);
-    console.log("firstAnswer:", firstAnswer);
-    console.log("secondAnswer:", secondAnswer);
-    console.log("correctAnswer:", task.correctAnswer);
-    console.log("aiRecommendation:", task.aiRecommendation);
-    console.log("aiExplanation:", task.aiExplanation);
-
     const firstAnswerCorrect =
         firstAnswer === task.correctAnswer;
 
@@ -1564,7 +1551,7 @@ async function saveTrial(secondAnswer) {
             Date.now() - aiShownAt :
             null;
 
-    const dataToSave = {
+    const trialData = {
 
         participant_id:
             participantId,
@@ -1616,66 +1603,25 @@ async function saveTrial(secondAnswer) {
     };
 
 
-    console.log(
-        "DATEN AN SUPABASE:",
-        dataToSave
-    );
+    // Nur im Testmodus ausgeben, damit Teilnehmende in der Konsole
+    // keine richtigen Antworten / KI-Bedingungen sehen
+
+    if (isTestMode) {
+
+        console.log(
+            "DATEN AN SUPABASE:",
+            trialData
+        );
+    }
 
 
     const {
         error
     } = await supabaseClient
         .from("trials")
-        .insert({
-
-            participant_id:
-                participantId,
-
-            task_number:
-                currentTask + 1,
-
-            task_id:
-                task.id,
-
-            task_type:
-                task.type,
-
-            group_id:
-                task.groupId,
-
-            group_position:
-                task.groupPosition,
-
-            first_answer:
-                firstAnswer,
-
-            ai_recommendation:
-                task.aiRecommendation,
-
-            ai_explanation:
-                task.aiExplanation,
-
-            second_answer:
-                secondAnswer,
-
-            correct_answer:
-                task.correctAnswer,
-
-            first_answer_correct:
-                firstAnswerCorrect,
-
-            second_answer_correct:
-                secondAnswerCorrect,
-
-            changed_answer:
-                changedAnswer,
-
-            first_response_time_ms:
-                firstResponseTimeMs,
-
-            second_response_time_ms:
-                secondResponseTimeMs
-        });
+        .insert(
+            trialData
+        );
 
 
     if (error) {
