@@ -1057,6 +1057,13 @@ function loadTask() {
      createAnswerButtons(
         task.options
     );
+
+    /* Neue Aufgabe immer von oben beginnen */
+
+    window.scrollTo(
+        0,
+        0
+    );
 }
 
 /* Antwortbuttons erzeugen */
@@ -1646,6 +1653,11 @@ function showCompletion() {
         ".answer-area"
     ).style.display =
         "none";
+
+    window.scrollTo(
+        0,
+        0
+    );
 }
 
 
