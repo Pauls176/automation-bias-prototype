@@ -1937,7 +1937,7 @@ function resetRatingSliders() {
                 );
 
             slider.value =
-                50;
+                0;
 
             slider.classList.add(
                 "untouched"
@@ -2001,7 +2001,7 @@ ratingSliderIds.forEach(
             );
 
         // "input" deckt Ziehen und Tastatur ab, "pointerdown" auch
-        // einen Klick genau auf den aktuellen (unsichtbaren) Wert
+        // einen Klick genau auf den aktuellen Wert (z.B. 0)
 
         slider.addEventListener(
             "input",
