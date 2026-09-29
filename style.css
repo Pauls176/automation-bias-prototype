@@ -356,15 +356,15 @@ body {
     background: #222;
 }
 
-/* Vor der ersten Bewegung kein sichtbarer Regler, damit kein
-   Startwert die Einschätzung beeinflusst */
+/* Vor der ersten Bewegung ist der Regler hellgrau, damit erkennbar
+   ist, dass man ihn bedienen kann, er aber noch nicht gesetzt wurde */
 
 .rating-slider.untouched::-webkit-slider-thumb {
-    opacity: 0;
+    background: #bbb;
 }
 
 .rating-slider.untouched::-moz-range-thumb {
-    opacity: 0;
+    background: #bbb;
 }
 
 .rating-slider:focus-visible {
