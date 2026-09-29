@@ -737,6 +737,12 @@ function buildSessionTasks(groups) {
 
 const tasks = buildSessionTasks(taskGroups);
 
+/* Anzahl Blöcke: die Aufgabenblöcke plus der abschließende
+   Bewertungsblock (Mensch vs. KI) */
+
+const totalBlocks =
+    taskGroups.length + 1;
+
 /* Experiment-Zustand */
 
 let currentTask = 0;
@@ -854,7 +860,7 @@ function loadTask() {
     document.getElementById(
         "task-counter"
     ).textContent =
-        `Aufgabe ${currentTask + 1} von ${tasks.length}`;
+        `Block ${task.groupOrder} von ${totalBlocks}`;
 
 
     /* Titel */
@@ -862,7 +868,7 @@ function loadTask() {
     document.getElementById(
         "task-title"
     ).textContent =
-        `Aufgabe ${currentTask + 1}`;
+        `Aufgabe ${task.groupPosition}`;
 
     /* Aufgabenbereich */
 
