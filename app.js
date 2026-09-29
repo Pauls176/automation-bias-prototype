@@ -751,6 +751,17 @@ let firstAnswer = null;
 
 let waitingForSecondAnswer = false;
 
+/* Antwortzeiten in ganzen Millisekunden:
+   - erste Antwort: ab Anzeige der Aufgabe
+   - zweite Antwort: ab Anzeige der KI-Empfehlung
+     (die Tipp-Animation zählt nicht mit) */
+
+let taskShownAt = null;
+
+let aiShownAt = null;
+
+let firstResponseTimeMs = null;
+
 /* Erzeugt ein <table>-Element aus Kopf- und Datenzeilen.
    Enthält eine Zeile weniger Zellen als Kopfspalten vorhanden sind
    (z.B. Interessenähnlichkeit), spannt die letzte Zelle über die
@@ -1058,6 +1069,15 @@ function loadTask() {
     waitingForSecondAnswer =
         false;
 
+    aiShownAt =
+        null;
+
+    firstResponseTimeMs =
+        null;
+
+    taskShownAt =
+        Date.now();
+
     /* Antwortbuttons erzeugen */
 
      createAnswerButtons(
@@ -1302,6 +1322,9 @@ function showAIResponse() {
     waitingForSecondAnswer =
         true;
 
+    aiShownAt =
+        Date.now();
+
 
     enableAnswerButtons();
 }
@@ -1333,6 +1356,11 @@ async function saveTrial(secondAnswer) {
 
     const changedAnswer =
         firstAnswer !== secondAnswer;
+
+    const secondResponseTimeMs =
+        aiShownAt !== null ?
+            Date.now() - aiShownAt :
+            null;
 
     const dataToSave = {
 
@@ -1376,7 +1404,13 @@ async function saveTrial(secondAnswer) {
             secondAnswerCorrect,
 
         changed_answer:
-            changedAnswer
+            changedAnswer,
+
+        first_response_time_ms:
+            firstResponseTimeMs,
+
+        second_response_time_ms:
+            secondResponseTimeMs
     };
 
 
@@ -1432,7 +1466,13 @@ async function saveTrial(secondAnswer) {
                 secondAnswerCorrect,
 
             changed_answer:
-                changedAnswer
+                changedAnswer,
+
+            first_response_time_ms:
+                firstResponseTimeMs,
+
+            second_response_time_ms:
+                secondResponseTimeMs
         });
 
 
@@ -1488,6 +1528,11 @@ function enableAnswerButtons() {
 
                         firstAnswer =
                             answer;
+
+                        firstResponseTimeMs =
+                            taskShownAt !== null ?
+                                Date.now() - taskShownAt :
+                                null;
 
 
                         addUserMessage(
