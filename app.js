@@ -13,15 +13,35 @@ const supabaseClient =
     );
 
 
-/* Teilnehmer-ID erzeugen, beim Prototypen noch randomisert, später durch SoSci erzeugt */
+/* Teilnehmer-ID: im Echtbetrieb kommt sie per ?id=... von LimeSurvey.
+   Testmodus (lokal, file://, oder ?test=1) erlaubt den Durchlauf ohne
+   LimeSurvey und erzeugt stattdessen eine zufällige Test-ID. */
+
+const urlParams =
+    new URLSearchParams(window.location.search);
+
+const idFromUrl =
+    urlParams.get("id");
+
+const isTestMode =
+    location.hostname === "localhost" ||
+    location.hostname === "127.0.0.1" ||
+    location.protocol === "file:" ||
+    urlParams.get("test") === "1";
+
+const hasValidSession =
+    isTestMode ||
+    Boolean(idFromUrl);
 
 const participantId =
-    "TEST-" +
-    crypto.randomUUID();
+    isTestMode ?
+        ("TEST-" + crypto.randomUUID()) :
+        idFromUrl;
 
 console.log(
     "Participant ID:",
-    participantId
+    participantId,
+    isTestMode ? "(Testmodus, keine echte Studiensitzung)" : ""
 );
 
 
@@ -1433,6 +1453,51 @@ function showCompletion() {
 }
 
 
+/* Fehlerfall: Seite wurde ohne gültige Teilnehmer-ID aufgerufen
+   (z. B. direkter Aufruf statt über den Studienlink) */
+
+function showMissingIdError() {
+
+    document.getElementById(
+        "task-counter"
+    ).textContent =
+        "Fehler";
+
+    document.getElementById(
+        "task-title"
+    ).textContent =
+        "Diese Seite kann nicht direkt aufgerufen werden";
+
+    document.getElementById(
+        "task-description"
+    ).innerHTML = `
+
+        <p>
+            Für die Studie fehlt eine gültige Teilnehmer-Kennung.
+            Bitte starten Sie die Studie über den Ihnen zugesandten
+            Umfrage-Link.
+        </p>
+
+    `;
+
+    document.getElementById(
+        "chat-messages"
+    ).innerHTML = "";
+
+    document.querySelector(
+        ".answer-area"
+    ).style.display =
+        "none";
+}
+
+
 /* START */
 
-loadTask();
+if (hasValidSession) {
+
+    loadTask();
+
+} else {
+
+    showMissingIdError();
+}
