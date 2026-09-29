@@ -267,13 +267,31 @@ body {
     background: #f0f0f0;
 }
 
+.table-note {
+    max-width: 600px;
+
+    margin: -12px auto 24px;
+
+    font-size: 13px;
+
+    color: #666;
+}
+
 
 /* Informationstext */
+
+.hotel-heading {
+    max-width: 700px;
+
+    margin: 24px auto 0;
+
+    font-weight: 600;
+}
 
 .information-box {
     max-width: 700px;
 
-    margin: 24px auto;
+    margin: 8px auto 24px;
 
     padding: 20px;
 
@@ -296,12 +314,27 @@ body {
     }
 
     .task-table {
+        table-layout: fixed;
+
         font-size: 14px;
     }
 
     .task-table th,
     .task-table td {
-        padding: 10px;
+        padding: 6px 4px;
+
+        word-break: break-word;
+        overflow-wrap: break-word;
+    }
+
+    .task-table th:first-child,
+    .task-table td:first-child {
+        width: 40%;
+    }
+
+    .task-table--speed-dating th:first-child,
+    .task-table--speed-dating td:first-child {
+        width: 26%;
     }
 
     .information-box {
