@@ -746,7 +746,87 @@ function buildSessionTasks(groups) {
     return sessionTasks;
 }
 
-const tasks = buildSessionTasks(taskGroups);
+/* Fortschritt pro Teilnehmer-ID im localStorage sichern, damit ein
+   einfacher Seiten-Reload (z. B. versehentlich F5) die Studie an der
+   gleichen Stelle fortsetzt, statt Aufgaben doppelt zu stellen.
+   Ein Hard-Refresh (Strg+Shift+R) sowie der Testmodus starten
+   bewusst von vorne. */
+
+const progressStorageKey =
+    (!isTestMode && idFromUrl) ?
+        ("abp_progress_" + idFromUrl) :
+        null;
+
+/* Erkennt einen Hard-Refresh anhand der Navigation-/Resource-Timing-Daten:
+   Bei einem normalen Reload beantwortet der Server das HTML meist aus dem
+   Cache oder per 304 (kleines transferSize). Ein Hard-Refresh erzwingt das
+   Umgehen des Caches, wodurch die Seite vollständig neu übertragen wird. */
+
+function isHardReload() {
+
+    try {
+
+        const [navigationEntry] =
+            performance.getEntriesByType("navigation");
+
+        if (!navigationEntry || navigationEntry.type !== "reload") {
+
+            return false;
+        }
+
+        return (
+            navigationEntry.transferSize > 0 &&
+            navigationEntry.transferSize >= navigationEntry.encodedBodySize
+        );
+
+    } catch (error) {
+
+        return false;
+    }
+}
+
+function loadStoredProgress() {
+
+    if (!progressStorageKey || isHardReload()) {
+
+        return null;
+    }
+
+    try {
+
+        const raw =
+            localStorage.getItem(progressStorageKey);
+
+        return raw ? JSON.parse(raw) : null;
+
+    } catch (error) {
+
+        console.warn(
+            "Gespeicherter Fortschritt konnte nicht gelesen werden:",
+            error
+        );
+
+        return null;
+    }
+}
+
+const storedProgress =
+    loadStoredProgress();
+
+const isFreshSession =
+    !(
+        storedProgress &&
+        Array.isArray(storedProgress.tasks) &&
+        storedProgress.tasks.length > 0
+    );
+
+/* Bei fortgesetzter Sitzung dieselbe (bereits randomisierte)
+   Aufgabenliste weiterverwenden, sonst neu erzeugen */
+
+const tasks =
+    isFreshSession ?
+        buildSessionTasks(taskGroups) :
+        storedProgress.tasks;
 
 /* Anzahl Blöcke: die Aufgabenblöcke plus der abschließende
    Bewertungsblock (Mensch vs. KI) */
@@ -814,6 +894,53 @@ let inRatingBlock = false;
 let currentRating = 0;
 
 let ratingShownAt = null;
+
+/* Gespeicherten Stand übernehmen bzw. neuen Stand sichern */
+
+if (!isFreshSession) {
+
+    currentTask =
+        storedProgress.currentTask || 0;
+
+    inRatingBlock =
+        Boolean(storedProgress.inRatingBlock);
+
+    currentRating =
+        storedProgress.currentRating || 0;
+}
+
+function saveProgress() {
+
+    if (!progressStorageKey) {
+
+        return;
+    }
+
+    try {
+
+        localStorage.setItem(
+            progressStorageKey,
+            JSON.stringify({
+                tasks: tasks,
+                currentTask: currentTask,
+                inRatingBlock: inRatingBlock,
+                currentRating: currentRating
+            })
+        );
+
+    } catch (error) {
+
+        console.warn(
+            "Fortschritt konnte nicht gespeichert werden:",
+            error
+        );
+    }
+}
+
+if (isFreshSession) {
+
+    saveProgress();
+}
 
 /* Erzeugt ein <table>-Element aus Kopf- und Datenzeilen.
    Enthält eine Zeile weniger Zellen als Kopfspalten vorhanden sind
@@ -1790,6 +1917,8 @@ function nextTask() {
 
     currentTask++;
 
+    saveProgress();
+
 
     if (
         currentTask >=
@@ -1815,6 +1944,8 @@ function startRatingBlock() {
 
     currentRating =
         0;
+
+    saveProgress();
 
     document.getElementById(
         "task-counter"
@@ -2084,6 +2215,8 @@ function nextRating() {
 
     currentRating++;
 
+    saveProgress();
+
     if (
         currentRating >=
         ratingGroups.length
@@ -2299,7 +2432,29 @@ document.getElementById(
 
 if (hasValidSession) {
 
-    showStudyIntro();
+    if (isFreshSession) {
+
+        showStudyIntro();
+
+    } else if (inRatingBlock && currentRating >= ratingGroups.length) {
+
+        showCompletion();
+
+    } else if (inRatingBlock && currentRating > 0) {
+
+        showRatingScreen();
+
+    } else if (inRatingBlock || currentTask >= tasks.length) {
+
+        // Aufgabenteil fertig, Bewertungsblock noch nicht begonnen
+        // bzw. erst dessen Einleitung gesehen
+
+        startRatingBlock();
+
+    } else {
+
+        goToCurrentTask();
+    }
 
 } else {
 
