@@ -449,7 +449,8 @@ function renderTaskContent(container, content) {
             content.image;
 
         image.alt =
-            "Foto derzeit nicht verfügbar";
+            "Foto konnte nicht geladen werden. Bitte laden Sie die " +
+            "Seite neu – Ihr Fortschritt bleibt erhalten.";
 
         image.className =
             "task-image";
