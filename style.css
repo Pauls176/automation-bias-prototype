@@ -221,6 +221,74 @@ body {
     }
 }
 
+/* Bewertungsblock (Mensch vs. KI) */
+
+.rating-section {
+    padding: 24px;
+    border-bottom: 1px solid #ddd;
+}
+
+.rating-progress {
+    margin: 0 0 8px;
+    font-size: 14px;
+    color: #666;
+}
+
+.rating-section h1 {
+    margin-top: 0;
+    font-size: 24px;
+}
+
+.rating-example-box {
+    margin: 24px 0;
+    padding: 16px;
+
+    border: 1px dashed #ccc;
+    border-radius: 8px;
+
+    background: #fafafa;
+}
+
+.rating-example-label {
+    margin: 0 0 8px;
+    font-size: 14px;
+    color: #666;
+}
+
+.preview-options {
+    display: flex;
+    gap: 12px;
+}
+
+.rating-section > .answer-button {
+    display: block;
+    width: 100%;
+    max-width: 260px;
+    margin: 32px auto 0;
+}
+
+/* Ausgegraute Beispielwerte: Beschriftungen bleiben lesbar,
+   die konkreten Werte sind grau und unscharf */
+
+.task-preview {
+    user-select: none;
+}
+
+.task-preview .task-table td:not(:first-child) {
+    color: #999;
+    filter: blur(4px);
+}
+
+.task-preview .information-box {
+    color: #999;
+    filter: blur(4px);
+}
+
+.task-preview .task-image {
+    filter: grayscale(1) blur(6px);
+    opacity: 0.5;
+}
+
 /* Smartphone */
 
 @media (max-width: 600px) {
@@ -231,6 +299,14 @@ body {
 
     .group-intro-section {
         padding: 18px;
+    }
+
+    .rating-section {
+        padding: 18px;
+    }
+
+    .preview-options {
+        flex-direction: column;
     }
 
     .chat-messages {

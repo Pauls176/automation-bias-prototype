@@ -50,6 +50,7 @@ console.log(
    ==========================================================
 
    Jede Gruppe enthält die gruppenweiten Angaben (Bezeichnung,
+   Beispielvariante für den Bewertungsblock (exampleVariantId),
    Einleitungstext, Frage, Chat-Intro, Antwortoptionen) und
    5 Varianten mit den eigentlichen Daten (Items aus der
    Pilotstudie, variantIds wie dort). Pro Variante wird die
@@ -66,6 +67,8 @@ const taskGroups = [
         groupId: "speed_dating",
 
         groupLabel: "Speed-Dating-Partner",
+
+        exampleVariantId: "speed_dating_01",
 
         groupIntro:
             "In diesem Aufgabenblock sehen Sie jeweils zwei Teilnehmer eines " +
@@ -233,6 +236,8 @@ const taskGroups = [
 
         groupLabel: "Hotelrezension",
 
+        exampleVariantId: "hotel_review_01",
+
         groupIntro:
             "In diesem Aufgabenblock lesen Sie Hotelrezensionen. " +
             "Jede Rezension ist in zwei Teile gegliedert: einen positiven " +
@@ -332,6 +337,8 @@ const taskGroups = [
 
         groupLabel: "Emotionserkennung",
 
+        exampleVariantId: "emotion_01",
+
         groupIntro:
             "In diesem Aufgabenblock sehen Sie jeweils ein Foto einer Person. " +
             "Es handelt sich um Standbilder realer Personen, die in einem emotionalen Moment " +
@@ -398,6 +405,8 @@ const taskGroups = [
         groupId: "real_estate",
 
         groupLabel: "Immobilienbewertung",
+
+        exampleVariantId: "real_estate_01",
 
         groupIntro:
             "In diesem Aufgabenblock sehen Sie Eckdaten einer realen Immobilie. " +
@@ -519,6 +528,8 @@ const taskGroups = [
         groupId: "rain_forecast",
 
         groupLabel: "Regenvorhersage",
+
+        exampleVariantId: "rain_forecast_01",
 
         groupIntro:
             "In diesem Aufgabenblock sehen Sie jeweils Wetterdaten für " +
@@ -743,6 +754,40 @@ const tasks = buildSessionTasks(taskGroups);
 const totalBlocks =
     taskGroups.length + 1;
 
+/* Bewertungsblock (letzter Block): Einleitung */
+
+const ratingBlock = {
+
+    label:
+        "Einschätzung Mensch und KI",
+
+    // TODO: Wortlaut der Einleitung zum Bewertungsblock anpassen
+    intro:
+        "[PLATZHALTER] In diesem letzten Block sehen Sie zu jedem Aufgabentyp " +
+        "noch einmal ein Beispiel. Bitte schätzen Sie jeweils ein, wie gut " +
+        "ein Mensch und wie gut eine KI solche Aufgaben lösen kann."
+};
+
+/* Reihenfolge der Bewertungsbildschirme = Reihenfolge, in der die
+   Blöcke im Aufgabenteil durchlaufen wurden */
+
+function buildRatingGroups(sessionTasks) {
+
+    return sessionTasks
+        .filter(
+            task => task.isFirstInGroup
+        )
+        .map(
+            task => ({
+                groupId: task.groupId,
+                groupOrder: task.groupOrder
+            })
+        );
+}
+
+const ratingGroups =
+    buildRatingGroups(tasks);
+
 /* Experiment-Zustand */
 
 let currentTask = 0;
@@ -761,6 +806,12 @@ let taskShownAt = null;
 let aiShownAt = null;
 
 let firstResponseTimeMs = null;
+
+/* Bewertungsblock: läuft er gerade, und welcher Bildschirm ist dran? */
+
+let inRatingBlock = false;
+
+let currentRating = 0;
 
 /* Erzeugt ein <table>-Element aus Kopf- und Datenzeilen.
    Enthält eine Zeile weniger Zellen als Kopfspalten vorhanden sind
@@ -859,6 +910,133 @@ function buildDataTable(tableData, className) {
     return table;
 }
 
+/* Aufgabeninhalt (Aufgabentext, Foto, Tabelle(n), Text) in einen
+   Container schreiben. Wird für die echten Aufgaben und für die
+   ausgegrauten Beispiele im Bewertungsblock verwendet. */
+
+function renderTaskContent(container, content) {
+
+    // Inhalt zunächst leeren
+
+    container.innerHTML = "";
+
+
+    /* Aufgabentext */
+
+    const prompt =
+        document.createElement("p");
+
+    prompt.textContent =
+        content.prompt;
+
+    container.appendChild(
+        prompt
+    );
+
+    /* Foto (kann zusätzlich zu einer Tabelle auftreten, z.B. Immobilien) */
+
+    if (content.image) {
+
+        const image =
+            document.createElement("img");
+
+        image.src =
+            content.image;
+
+        image.alt =
+            "Foto derzeit nicht verfügbar";
+
+        image.className =
+            "task-image";
+
+        container.appendChild(
+            image
+        );
+    }
+
+    /* Tabelle(n) */
+
+    if (content.groupId === "speed_dating") {
+
+        // Tabelle 1: Stammdaten & Interessenähnlichkeit
+
+        container.appendChild(
+            buildDataTable(
+                content.table1,
+                "task-table task-table--speed-dating"
+            )
+        );
+
+        // Hinweis zwischen den beiden Tabellen
+
+        const tableNote =
+            document.createElement("p");
+
+        tableNote.className =
+            "table-note";
+
+        tableNote.textContent =
+            "Die folgenden Werte zeigen, wie diese Person ihr Gegenüber eingeschätzt hat " +
+            "(nicht, wie sie selbst von ihrem Gegenüber eingeschätzt wurde).";
+
+        container.appendChild(
+            tableNote
+        );
+
+        // Tabelle 2: Bewertungen
+
+        container.appendChild(
+            buildDataTable(
+                content.table2,
+                "task-table task-table--speed-dating"
+            )
+        );
+
+    } else if (content.table) {
+
+        container.appendChild(
+            buildDataTable(
+                content.table,
+                "task-table"
+            )
+        );
+    }
+
+    /* Text */
+
+    if (content.information) {
+
+        if (content.hotelName && content.location) {
+
+            const hotelHeading =
+                document.createElement("p");
+
+            hotelHeading.className =
+                "hotel-heading";
+
+            hotelHeading.textContent =
+                `Bewertung von ${content.hotelName} in ${content.location}`;
+
+            container.appendChild(
+                hotelHeading
+            );
+        }
+
+        const informationBox =
+            document.createElement("div");
+
+        informationBox.className =
+            "information-box";
+
+        informationBox.textContent =
+            content.information;
+
+        container.appendChild(
+            informationBox
+        );
+    }
+}
+
 /* Aufgabe laden */
 
 function loadTask() {
@@ -888,125 +1066,10 @@ function loadTask() {
             "task-description"
         );
 
-    // Inhalt zunächst leeren
-
-    taskDescription.innerHTML = "";
-
-
-    /* Aufgabentext */
-
-    const prompt =
-        document.createElement("p");
-
-    prompt.textContent =
-        task.prompt;
-
-    taskDescription.appendChild(
-        prompt
+    renderTaskContent(
+        taskDescription,
+        task
     );
-
-    /* Foto (kann zusätzlich zu einer Tabelle auftreten, z.B. Immobilien) */
-
-    if (task.image) {
-
-        const image =
-            document.createElement("img");
-
-        image.src =
-            task.image;
-
-        image.alt =
-            "Foto derzeit nicht verfügbar";
-
-        image.className =
-            "task-image";
-
-        taskDescription.appendChild(
-            image
-        );
-    }
-
-    /* Tabelle(n) */
-
-    if (task.groupId === "speed_dating") {
-
-        // Tabelle 1: Stammdaten & Interessenähnlichkeit
-
-        taskDescription.appendChild(
-            buildDataTable(
-                task.table1,
-                "task-table task-table--speed-dating"
-            )
-        );
-
-        // Hinweis zwischen den beiden Tabellen
-
-        const tableNote =
-            document.createElement("p");
-
-        tableNote.className =
-            "table-note";
-
-        tableNote.textContent =
-            "Die folgenden Werte zeigen, wie diese Person ihr Gegenüber eingeschätzt hat " +
-            "(nicht, wie sie selbst von ihrem Gegenüber eingeschätzt wurde).";
-
-        taskDescription.appendChild(
-            tableNote
-        );
-
-        // Tabelle 2: Bewertungen
-
-        taskDescription.appendChild(
-            buildDataTable(
-                task.table2,
-                "task-table task-table--speed-dating"
-            )
-        );
-
-    } else if (task.table) {
-
-        taskDescription.appendChild(
-            buildDataTable(
-                task.table,
-                "task-table"
-            )
-        );
-    }
-
-    /* Text */
-
-     if (task.information) {
-
-        if (task.hotelName && task.location) {
-
-            const hotelHeading =
-                document.createElement("p");
-
-            hotelHeading.className =
-                "hotel-heading";
-
-            hotelHeading.textContent =
-                `Bewertung von ${task.hotelName} in ${task.location}`;
-
-            taskDescription.appendChild(
-                hotelHeading
-            );
-        }
-
-        const informationBox =
-            document.createElement("div");
-
-        informationBox.className =
-            "information-box";
-
-        informationBox.textContent =
-            task.information;
-
-        taskDescription.appendChild(
-            informationBox
-        );
-    }
 
     /* Chat zurücksetzen */
 
@@ -1636,7 +1699,9 @@ const viewSections = {
 
     "group-intro": ["group-intro-section"],
 
-    "task": ["task-section", "chat-section"]
+    "task": ["task-section", "chat-section"],
+
+    "rating": ["rating-section"]
 };
 
 function showView(viewName) {
@@ -1729,13 +1794,141 @@ function nextTask() {
         tasks.length
     ) {
 
-        showCompletion();
+        startRatingBlock();
 
         return;
     }
 
 
     goToCurrentTask();
+}
+
+
+/* Bewertungsblock starten: zuerst dessen Einleitung */
+
+function startRatingBlock() {
+
+    inRatingBlock =
+        true;
+
+    currentRating =
+        0;
+
+    document.getElementById(
+        "task-counter"
+    ).textContent =
+        `Block ${totalBlocks} von ${totalBlocks}`;
+
+    document.getElementById(
+        "group-intro-title"
+    ).textContent =
+        ratingBlock.label;
+
+    document.getElementById(
+        "group-intro-text"
+    ).textContent =
+        ratingBlock.intro;
+
+    showView("group-intro");
+}
+
+
+/* Bewertungsbildschirm: ausgegrautes Beispiel eines Aufgabentyps */
+
+function showRatingScreen() {
+
+    const group =
+        taskGroups.find(
+            candidate =>
+                candidate.groupId === ratingGroups[currentRating].groupId
+        );
+
+    const exampleVariant =
+        group.variants.find(
+            variant => variant.variantId === group.exampleVariantId
+        ) ||
+        group.variants[0];
+
+    document.getElementById(
+        "task-counter"
+    ).textContent =
+        `Block ${totalBlocks} von ${totalBlocks}`;
+
+    document.getElementById(
+        "rating-progress"
+    ).textContent =
+        `Einschätzung ${currentRating + 1} von ${ratingGroups.length}`;
+
+    document.getElementById(
+        "rating-title"
+    ).textContent =
+        group.groupLabel;
+
+    renderTaskContent(
+        document.getElementById(
+            "rating-example"
+        ),
+        {
+            ...exampleVariant,
+            groupId: group.groupId,
+            prompt: group.prompt
+        }
+    );
+
+    /* Antwortoptionen nur zur Orientierung, nicht klickbar */
+
+    const exampleOptions =
+        document.getElementById(
+            "rating-example-options"
+        );
+
+    exampleOptions.innerHTML = "";
+
+    group.options.forEach(
+        option => {
+
+            const button =
+                document.createElement("button");
+
+            button.className =
+                "answer-button";
+
+            button.textContent =
+                option;
+
+            button.disabled =
+                true;
+
+            button.tabIndex =
+                -1;
+
+            exampleOptions.appendChild(
+                button
+            );
+        }
+    );
+
+    showView("rating");
+}
+
+
+/* Nächster Bewertungsbildschirm bzw. Abschluss */
+
+function nextRating() {
+
+    currentRating++;
+
+    if (
+        currentRating >=
+        ratingGroups.length
+    ) {
+
+        showCompletion();
+
+        return;
+    }
+
+    showRatingScreen();
 }
 
 
@@ -1865,9 +2058,29 @@ document.getElementById(
     "click",
     () => {
 
+        if (inRatingBlock) {
+
+            showRatingScreen();
+
+            return;
+        }
+
         showView("task");
 
         loadTask();
+    }
+);
+
+
+/* Bewertungsbildschirm: Weiter-Button */
+
+document.getElementById(
+    "rating-submit"
+).addEventListener(
+    "click",
+    () => {
+
+        nextRating();
     }
 );
 
