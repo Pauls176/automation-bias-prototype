@@ -1500,7 +1500,7 @@ function enableAnswerButtons() {
 
     const buttons =
         document.querySelectorAll(
-            ".answer-button"
+            ".answer-options .answer-button"
         );
 
 
@@ -1613,7 +1613,7 @@ function disableAnswerButtons() {
 
     const buttons =
         document.querySelectorAll(
-            ".answer-button"
+            ".answer-options .answer-button"
         );
 
 
@@ -1624,6 +1624,96 @@ function disableAnswerButtons() {
                 true;
         }
     );
+}
+
+
+/* Ansicht umschalten: blendet genau eine Ansicht ein.
+   "task" zeigt Aufgabenbereich und Chat gemeinsam. */
+
+const viewSections = {
+
+    "study-intro": ["study-intro-section"],
+
+    "group-intro": ["group-intro-section"],
+
+    "task": ["task-section", "chat-section"]
+};
+
+function showView(viewName) {
+
+    Object.entries(viewSections).forEach(
+        ([name, sectionIds]) => {
+
+            sectionIds.forEach(
+                sectionId => {
+
+                    document.getElementById(
+                        sectionId
+                    ).hidden =
+                        name !== viewName;
+                }
+            );
+        }
+    );
+
+    window.scrollTo(
+        0,
+        0
+    );
+}
+
+
+/* Einleitungsbildschirm für den gesamten Aufgabenteil anzeigen */
+
+function showStudyIntro() {
+
+    showView("study-intro");
+}
+
+
+/* Gruppen-Einleitungsbildschirm anzeigen */
+
+function showGroupIntro(task) {
+
+    document.getElementById(
+        "task-counter"
+    ).textContent =
+        `Block ${task.groupOrder} von ${totalBlocks}`;
+
+    document.getElementById(
+        "group-intro-title"
+    ).textContent =
+        task.groupLabel;
+
+    document.getElementById(
+        "group-intro-text"
+    ).textContent =
+        task.groupIntro || "";
+
+    showView("group-intro");
+}
+
+
+/* Aktuelle Aufgabe anzeigen: bei der ersten Aufgabe eines
+   Blocks zuerst die Gruppen-Einleitung */
+
+function goToCurrentTask() {
+
+    const task =
+        tasks[currentTask];
+
+    if (task.isFirstInGroup) {
+
+        showGroupIntro(
+            task
+        );
+
+    } else {
+
+        showView("task");
+
+        loadTask();
+    }
 }
 
 
@@ -1645,13 +1735,15 @@ function nextTask() {
     }
 
 
-    loadTask();
+    goToCurrentTask();
 }
 
 
 /* Abschluss */
 
 function showCompletion() {
+
+    showView("task");
 
     document.getElementById(
         "task-counter"
@@ -1717,6 +1809,8 @@ function showCompletion() {
 
 function showMissingIdError() {
 
+    showView("task");
+
     document.getElementById(
         "task-counter"
     ).textContent =
@@ -1750,11 +1844,39 @@ function showMissingIdError() {
 }
 
 
+/* Studien-Einleitung: Weiter-Button */
+
+document.getElementById(
+    "study-intro-continue"
+).addEventListener(
+    "click",
+    () => {
+
+        goToCurrentTask();
+    }
+);
+
+
+/* Gruppen-Einleitung: Weiter-Button */
+
+document.getElementById(
+    "group-intro-continue"
+).addEventListener(
+    "click",
+    () => {
+
+        showView("task");
+
+        loadTask();
+    }
+);
+
+
 /* START */
 
 if (hasValidSession) {
 
-    loadTask();
+    showStudyIntro();
 
 } else {
 

@@ -23,7 +23,35 @@
             <span id="task-counter">Block 1 von 6</span>
         </header>
 
-        <section class="task-section">
+        <section class="group-intro-section" id="study-intro-section" hidden>
+
+            <h1 id="study-intro-title">Aufgabenteil</h1>
+
+            <!-- TODO: Wortlaut der Studien-Einleitung anpassen -->
+            <p id="study-intro-text" class="group-intro-text">
+                Nun folgt der Aufgabenteil der Studie. Er besteht aus 6 Blöcken mit unterschiedlichen Aufgaben.
+                Bitte treffen Sie Ihre Einschätzung so gut wie möglich. Wenn Sie sich bei einer Frage unsicher sind, entscheiden Sie sich aus Ihrer Sicht für die bestmögliche Option.
+            </p>
+
+            <button id="study-intro-continue" class="answer-button">
+                Weiter
+            </button>
+
+        </section>
+
+        <section class="group-intro-section" id="group-intro-section" hidden>
+
+            <h1 id="group-intro-title"></h1>
+
+            <p id="group-intro-text" class="group-intro-text"></p>
+
+            <button id="group-intro-continue" class="answer-button">
+                Weiter
+            </button>
+
+        </section>
+
+        <section class="task-section" id="task-section">
 
             <h1 id="task-title">
                 Aufgabe
@@ -36,7 +64,7 @@
 
         </section>
 
-        <section class="chat-container">
+        <section class="chat-container" id="chat-section">
 
             <div id="chat-messages" class="chat-messages">
 
