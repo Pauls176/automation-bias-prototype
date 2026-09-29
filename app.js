@@ -2116,9 +2116,6 @@ async function saveGroupRating(humanRating, aiRating) {
             group_order:
                 ratingGroup.groupOrder,
 
-            rating_position:
-                currentRating + 1,
-
             human_rating:
                 humanRating,
 
