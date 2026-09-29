@@ -813,6 +813,8 @@ let inRatingBlock = false;
 
 let currentRating = 0;
 
+let ratingShownAt = null;
+
 /* Erzeugt ein <table>-Element aus Kopf- und Datenzeilen.
    Enthält eine Zeile weniger Zellen als Kopfspalten vorhanden sind
    (z.B. Interessenähnlichkeit), spannt die letzte Zelle über die
@@ -1908,7 +1910,171 @@ function showRatingScreen() {
         }
     );
 
+    resetRatingSliders();
+
+    ratingShownAt =
+        Date.now();
+
     showView("rating");
+}
+
+
+/* Slider Mensch / KI */
+
+const ratingSliderIds = [
+    "rating-human",
+    "rating-ai"
+];
+
+function resetRatingSliders() {
+
+    ratingSliderIds.forEach(
+        sliderId => {
+
+            const slider =
+                document.getElementById(
+                    sliderId
+                );
+
+            slider.value =
+                50;
+
+            slider.classList.add(
+                "untouched"
+            );
+
+            document.getElementById(
+                `${sliderId}-value`
+            ).textContent =
+                "–";
+        }
+    );
+
+    updateRatingSubmitState();
+}
+
+function markSliderTouched(slider) {
+
+    slider.classList.remove(
+        "untouched"
+    );
+
+    document.getElementById(
+        `${slider.id}-value`
+    ).textContent =
+        slider.value;
+
+    updateRatingSubmitState();
+}
+
+/* Weiter erst, wenn beide Slider bewegt wurden */
+
+function updateRatingSubmitState() {
+
+    const allTouched =
+        ratingSliderIds.every(
+            sliderId =>
+                !document.getElementById(
+                    sliderId
+                ).classList.contains(
+                    "untouched"
+                )
+        );
+
+    document.getElementById(
+        "rating-submit"
+    ).disabled =
+        !allTouched;
+
+    document.getElementById(
+        "rating-hint"
+    ).hidden =
+        allTouched;
+}
+
+ratingSliderIds.forEach(
+    sliderId => {
+
+        const slider =
+            document.getElementById(
+                sliderId
+            );
+
+        // "input" deckt Ziehen und Tastatur ab, "pointerdown" auch
+        // einen Klick genau auf den aktuellen (unsichtbaren) Wert
+
+        slider.addEventListener(
+            "input",
+            () => markSliderTouched(slider)
+        );
+
+        slider.addEventListener(
+            "pointerdown",
+            () => markSliderTouched(slider)
+        );
+    }
+);
+
+
+/* Einschätzung an Supabase senden */
+
+async function saveGroupRating(humanRating, aiRating) {
+
+    const ratingGroup =
+        ratingGroups[currentRating];
+
+    const responseTimeMs =
+        ratingShownAt !== null ?
+            Date.now() - ratingShownAt :
+            null;
+
+    const {
+        error
+    } = await supabaseClient
+        .from("group_ratings")
+        .insert({
+
+            participant_id:
+                participantId,
+
+            group_id:
+                ratingGroup.groupId,
+
+            group_order:
+                ratingGroup.groupOrder,
+
+            rating_position:
+                currentRating + 1,
+
+            human_rating:
+                humanRating,
+
+            ai_rating:
+                aiRating,
+
+            rating_difference:
+                humanRating - aiRating,
+
+            response_time_ms:
+                responseTimeMs
+        });
+
+
+    if (error) {
+
+        console.error(
+            "Supabase error:",
+            error
+        );
+
+        throw error;
+    }
+
+
+    console.log(
+        "Einschätzung gespeichert:",
+        ratingGroup.groupId
+    );
 }
 
 
@@ -2078,9 +2244,53 @@ document.getElementById(
     "rating-submit"
 ).addEventListener(
     "click",
-    () => {
+    async () => {
 
-        nextRating();
+        const submitButton =
+            document.getElementById(
+                "rating-submit"
+            );
+
+        submitButton.disabled =
+            true;
+
+        try {
+
+            await saveGroupRating(
+                Number(
+                    document.getElementById(
+                        "rating-human"
+                    ).value
+                ),
+                Number(
+                    document.getElementById(
+                        "rating-ai"
+                    ).value
+                )
+            );
+
+            document.getElementById(
+                "status-message"
+            ).textContent = "";
+
+            nextRating();
+
+        } catch (error) {
+
+            console.error(
+                error
+            );
+
+            document
+                .getElementById(
+                    "status-message"
+                )
+                .textContent =
+                "Beim Speichern ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.";
+
+            submitButton.disabled =
+                false;
+        }
     }
 );
 

@@ -264,7 +264,119 @@ body {
     display: block;
     width: 100%;
     max-width: 260px;
-    margin: 32px auto 0;
+    margin: 16px auto 0;
+}
+
+/* Slider Mensch / KI (0-100) */
+
+.rating-slider-group {
+    margin: 32px 0 0;
+}
+
+.rating-question {
+    display: block;
+    margin-bottom: 12px;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+.rating-slider-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.rating-value {
+    min-width: 3ch;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+}
+
+.rating-scale-labels {
+    display: flex;
+    justify-content: space-between;
+
+    margin-top: 6px;
+    padding-right: calc(3ch + 16px);
+
+    font-size: 13px;
+    color: #666;
+}
+
+.rating-slider {
+    flex: 1;
+    min-width: 0;
+    height: 28px;
+
+    margin: 0;
+
+    background: transparent;
+
+    -webkit-appearance: none;
+    appearance: none;
+
+    cursor: pointer;
+    touch-action: pan-y;
+}
+
+.rating-slider::-webkit-slider-runnable-track {
+    height: 6px;
+    border-radius: 3px;
+    background: #ddd;
+}
+
+.rating-slider::-moz-range-track {
+    height: 6px;
+    border-radius: 3px;
+    background: #ddd;
+}
+
+.rating-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+
+    width: 22px;
+    height: 22px;
+    margin-top: -8px;
+
+    border: none;
+    border-radius: 50%;
+
+    background: #222;
+}
+
+.rating-slider::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+
+    border: none;
+    border-radius: 50%;
+
+    background: #222;
+}
+
+/* Vor der ersten Bewegung kein sichtbarer Regler, damit kein
+   Startwert die Einschätzung beeinflusst */
+
+.rating-slider.untouched::-webkit-slider-thumb {
+    opacity: 0;
+}
+
+.rating-slider.untouched::-moz-range-thumb {
+    opacity: 0;
+}
+
+.rating-slider:focus-visible {
+    outline: 2px solid #555;
+    outline-offset: 4px;
+}
+
+.rating-hint {
+    margin: 24px 0 0;
+    text-align: center;
+    font-size: 14px;
+    color: #666;
 }
 
 /* Ausgegraute Beispielwerte: Beschriftungen bleiben lesbar,

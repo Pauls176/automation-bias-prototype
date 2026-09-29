@@ -123,9 +123,69 @@
 
             </div>
 
-            <!-- Slider "Mensch" und "KI" folgen in Chunk 8b -->
+            <div class="rating-slider-group">
 
-            <button id="rating-submit" class="answer-button">
+                <label for="rating-human" class="rating-question">
+                    Wie gut ist ein Mensch im Lösen solcher Aufgaben?
+                </label>
+
+                <div class="rating-slider-row">
+
+                    <input
+                        type="range"
+                        id="rating-human"
+                        class="rating-slider untouched"
+                        min="0"
+                        max="100"
+                        step="1"
+                        value="50"
+                    >
+
+                    <output id="rating-human-value" class="rating-value" for="rating-human">–</output>
+
+                </div>
+
+                <div class="rating-scale-labels">
+                    <span>0 – sehr schlecht</span>
+                    <span>100 – sehr gut</span>
+                </div>
+
+            </div>
+
+            <div class="rating-slider-group">
+
+                <label for="rating-ai" class="rating-question">
+                    Wie gut ist eine KI im Lösen solcher Aufgaben?
+                </label>
+
+                <div class="rating-slider-row">
+
+                    <input
+                        type="range"
+                        id="rating-ai"
+                        class="rating-slider untouched"
+                        min="0"
+                        max="100"
+                        step="1"
+                        value="50"
+                    >
+
+                    <output id="rating-ai-value" class="rating-value" for="rating-ai">–</output>
+
+                </div>
+
+                <div class="rating-scale-labels">
+                    <span>0 – sehr schlecht</span>
+                    <span>100 – sehr gut</span>
+                </div>
+
+            </div>
+
+            <p id="rating-hint" class="rating-hint">
+                Bitte bewegen Sie beide Schieberegler, um fortzufahren.
+            </p>
+
+            <button id="rating-submit" class="answer-button" disabled>
                 Weiter
             </button>
 
