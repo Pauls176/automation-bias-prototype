@@ -44,7 +44,7 @@ if (isTestMode) {
 }
 
 
-/* Fisher-Yates Shuffle (mischt eine Kopie des Arrays) */
+/* Fisher-Yates Shuffle */
 
 function shuffle(array) {
 
@@ -74,10 +74,8 @@ function shuffle(array) {
 /* Session-Aufgabenliste aufbauen:
    - Randomisierung der Aufgabenblöcke (taskGroups)
    - Randomisierung der 5 Aufgaben (variants) je Block
-   - (Innerhalb eines Blocks) sind die KI-Empfehlungen ersten drei korrekt
+   - Innerhalb eines Blocks sind die KI-Empfehlungen ersten drei korrekt
      und letzten beiden inkorrekt (inkl. passender Begründung)
-   - groupOrder hält fest, an welcher Stelle eine Gruppe in
-     der randomisierten Reihenfolge durchlaufen wurde
    - isFirstInGroup / isLastInGroup markieren die erste bzw.
      letzte Aufgabe einer Gruppe */
 
