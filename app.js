@@ -17,30 +17,55 @@ const hasValidSession =
     isTestMode ||
     Boolean(idFromUrl);
 
-const participantId =
-    isTestMode ?
-        ("TEST-" + crypto.randomUUID()) :
+// Im Testmodus wird eine zufällige Test-ID erzeugt
+
+let participantId;
+
+if (isTestMode) {
+
+    participantId = "TEST-" + crypto.randomUUID();
+    
+        console.log(
+        "Participant ID:",
+        participantId,
+        "(Testmodus, keine echte Studiensitzung)"
+    );
+
+} else {
+
+    // sonst wird die ID aus der URL übernommen 
+    participantId =
         idFromUrl;
 
-console.log(
-    "Participant ID:",
-    participantId,
-    isTestMode ? "(Testmodus, keine echte Studiensitzung)" : ""
-);
+    console.log(
+        "Participant ID:",
+        participantId
+    );
+}
 
 
 /* Fisher-Yates Shuffle (mischt eine Kopie des Arrays) */
 
 function shuffle(array) {
 
-    const shuffled = [...array];
+    // Kopie anlegen, damit das Original-Array unverändert bleibt
+
+    const shuffled = array.slice();
 
     for (let i = shuffled.length - 1; i > 0; i--) {
 
         const j = Math.floor(Math.random() * (i + 1));
 
-        [shuffled[i], shuffled[j]] =
-            [shuffled[j], shuffled[i]];
+        // Elemente an Position i und j vertauschen
+
+        const temp =
+            shuffled[i];
+
+        shuffled[i] =
+            shuffled[j];
+
+        shuffled[j] =
+            temp;
     }
 
     return shuffled;
@@ -60,21 +85,65 @@ function buildSessionTasks(groups) {
 
     const sessionTasks = [];
 
-    shuffle(groups).forEach((group, groupIndex) => {
+    const shuffledGroups =
+        shuffle(groups);
+
+    for (let groupIndex = 0; groupIndex < shuffledGroups.length; groupIndex++) {
+
+        const group =
+            shuffledGroups[groupIndex];
 
         const groupOrder = groupIndex + 1;
 
-        shuffle(group.variants).forEach((variant, index) => {
+        const shuffledVariants =
+            shuffle(group.variants);
+
+        for (let index = 0; index < shuffledVariants.length; index++) {
+
+            const variant =
+                shuffledVariants[index];
 
             const groupPosition = index + 1;
 
             const aiRecommendsCorrectly =
                 groupPosition <= 3;
 
-            const wrongAnswer =
-                group.options.find(
-                    option => option !== variant.correctAnswer
-                );
+            // Falsche Antwort (wird für die aiRecommendation gebraucht)
+
+            let wrongAnswer = null;
+
+            for (const option of group.options) {
+
+                if (option !== variant.correctAnswer) {
+
+                    wrongAnswer = option;
+
+                    break;
+                }
+            }
+
+            // KI-Empfehlung und Begründung: richtig oder falsch
+
+            let aiRecommendation;
+
+            let aiExplanation;
+
+            if (aiRecommendsCorrectly) {
+
+                aiRecommendation =
+                    variant.correctAnswer;
+
+                aiExplanation =
+                    variant.explanationIfCorrect;
+
+            } else {
+
+                aiRecommendation =
+                    wrongAnswer;
+
+                aiExplanation =
+                    variant.explanationIfWrong;
+            }
 
             sessionTasks.push({
 
@@ -104,18 +173,12 @@ function buildSessionTasks(groups) {
 
                 correctAnswer: variant.correctAnswer,
 
-                aiRecommendation:
-                    aiRecommendsCorrectly
-                        ? variant.correctAnswer
-                        : wrongAnswer,
+                aiRecommendation: aiRecommendation,
 
-                aiExplanation:
-                    aiRecommendsCorrectly
-                        ? variant.explanationIfCorrect
-                        : variant.explanationIfWrong
+                aiExplanation: aiExplanation
             });
-        });
-    });
+        }
+    }
 
     return sessionTasks;
 }
@@ -125,10 +188,13 @@ function buildSessionTasks(groups) {
    Für Test-Zwecke startet ein Hard-Refresh (Strg+Shift+R) und der Testmodus
    immer von vorne. */
 
-const progressStorageKey =
-    (!isTestMode && idFromUrl) ?
-        ("abp_progress_" + idFromUrl) :
-        null;
+let progressStorageKey = null;
+
+if (!isTestMode && idFromUrl) {
+
+    progressStorageKey =
+        "abp_progress_" + idFromUrl;
+}
 
 /* Erkennt einen Hard-Refresh anhand des Caches. */
 
@@ -136,8 +202,11 @@ function isHardReload() {
 
     try {
 
-        const [navigationEntry] =
+        const navigationEntries =
             performance.getEntriesByType("navigation");
+
+        const navigationEntry =
+            navigationEntries[0];
 
         if (!navigationEntry || navigationEntry.type !== "reload") {
 
@@ -169,7 +238,14 @@ function loadStoredProgress() {
         const raw =
             localStorage.getItem(progressStorageKey);
 
-        return raw ? JSON.parse(raw) : null;
+        // Nichts gespeichert -> null zurückgeben
+
+        if (!raw) {
+
+            return null;
+        }
+
+        return JSON.parse(raw);
 
     } catch (error) {
 
@@ -185,20 +261,34 @@ function loadStoredProgress() {
 const storedProgress =
     loadStoredProgress();
 
-const isFreshSession =
-    !(
-        storedProgress &&
-        Array.isArray(storedProgress.tasks) &&
-        storedProgress.tasks.length > 0
-    );
+// Neue Sitzung, außer es gibt einen gespeicherten Stand mit Aufgaben
 
-/* Bei fortgesetzter Sitzung wird dieselbe (bereits randomisierte)
-   Aufgabenliste weiterbenutzt */
+let isFreshSession = true;
 
-const tasks =
-    isFreshSession ?
-        buildSessionTasks(taskGroups) :
+if (
+    storedProgress &&
+    Array.isArray(storedProgress.tasks) &&
+    storedProgress.tasks.length > 0
+) {
+
+    isFreshSession = false;
+}
+
+/* Bei neuer Sitzung die Aufgabenblöcke bauen, bei fortgesetzter Sitzung 
+    die bestehende (randomisierte) Aufgabenreihenfolge verwenden */
+
+let tasks;
+
+if (isFreshSession) {
+
+    tasks =
+        buildSessionTasks(taskGroups);
+
+} else {
+
+    tasks =
         storedProgress.tasks;
+}
 
 /* Anzahl Blöcke: Aufgabenblöcke + Bewertungsblock */
 
@@ -224,16 +314,22 @@ const ratingBlock = {
 
 function buildRatingGroups(sessionTasks) {
 
-    return sessionTasks
-        .filter(
-            task => task.isFirstInGroup
-        )
-        .map(
-            task => ({
+    const result = [];
+
+    // Pro Block nur die erste Aufgabe betrachten
+
+    for (const task of sessionTasks) {
+
+        if (task.isFirstInGroup) {
+
+            result.push({
                 groupId: task.groupId,
                 groupOrder: task.groupOrder
-            })
-        );
+            });
+        }
+    }
+
+    return result;
 }
 
 const ratingGroups =
@@ -247,9 +343,7 @@ let firstAnswer = null;
 
 let waitingForSecondAnswer = false;
 
-/* Antwortzeiten in Millisekunden:
-   - erste Antwort: ab Anzeige der Aufgabe
-   - zweite Antwort: ab Anzeige der KI-Empfehlung */
+// Antwortzeiten in Millisekunden
 
 let taskShownAt = null;
 
@@ -257,7 +351,7 @@ let aiShownAt = null;
 
 let firstResponseTimeMs = null;
 
-/* Bewertungsblock: läuft er gerade, und welcher Bildschirm ist dran? */
+// Bewertungsblock: läuft er gerade, und welcher Bildschirm ist dran? 
 
 let inRatingBlock = false;
 
@@ -265,18 +359,24 @@ let currentRating = 0;
 
 let ratingShownAt = null;
 
-/* Gespeicherten Stand übernehmen bzw. neuen Stand sichern */
+// Gespeicherten Stand übernehmen bzw. neuen Stand sichern 
 
 if (!isFreshSession) {
 
-    currentTask =
-        storedProgress.currentTask || 0;
+    if (storedProgress.currentTask) {
+
+        currentTask =
+            storedProgress.currentTask;
+    }
 
     inRatingBlock =
         Boolean(storedProgress.inRatingBlock);
 
-    currentRating =
-        storedProgress.currentRating || 0;
+    if (storedProgress.currentRating) {
+
+        currentRating =
+            storedProgress.currentRating;
+    }
 }
 
 function saveProgress() {
@@ -331,20 +431,18 @@ function buildDataTable(tableData, className) {
     const headerRow =
         document.createElement("tr");
 
-    tableData.headers.forEach(
-        header => {
+    for (const header of tableData.headers) {
 
-            const th =
-                document.createElement("th");
+        const th =
+            document.createElement("th");
 
-            th.textContent =
-                header;
+        th.textContent =
+            header;
 
-            headerRow.appendChild(
-                th
-            );
-        }
-    );
+        headerRow.appendChild(
+            th
+        );
+    }
 
     thead.appendChild(
         headerRow
@@ -360,47 +458,46 @@ function buildDataTable(tableData, className) {
     const tbody =
         document.createElement("tbody");
 
-    tableData.rows.forEach(
-        row => {
+    for (const row of tableData.rows) {
 
-            const tr =
-                document.createElement("tr");
+        const tr =
+            document.createElement("tr");
 
-            row.forEach(
-                (cell, index) => {
+        for (let index = 0; index < row.length; index++) {
 
-                    const td =
-                        document.createElement("td");
+            const cell =
+                row[index];
 
-                    td.textContent =
-                        cell;
+            const td =
+                document.createElement("td");
 
-                    /* Für Speed-Dating Tabelle muss die letzte Zelle 
-                    sich über beide Spalten erstrecken */
+            td.textContent =
+                cell;
 
-                    const isLastCell =
-                        index === row.length - 1;
+            /* Für Speed-Dating Tabelle muss die letzte Zelle
+            sich über beide Spalten erstrecken */
 
-                    const missingCells =
-                        tableData.headers.length - row.length;
+            const isLastCell =
+                index === row.length - 1;
 
-                    if (isLastCell && missingCells > 0) {
+            const missingCells =
+                tableData.headers.length - row.length;
 
-                        td.colSpan =
-                            missingCells + 1;
-                    }
+            if (isLastCell && missingCells > 0) {
 
-                    tr.appendChild(
-                        td
-                    );
-                }
-            );
+                td.colSpan =
+                    missingCells + 1;
+            }
 
-            tbody.appendChild(
-                tr
+            tr.appendChild(
+                td
             );
         }
-    );
+
+        tbody.appendChild(
+            tr
+        );
+    }
 
     table.appendChild(
         tbody
@@ -409,7 +506,7 @@ function buildDataTable(tableData, className) {
     return table;
 }
 
-/* Aufgabeninhalt (Aufgabentext, Foto, Tabelle(n), Text) in einen
+/* Aufgabeninhalt (Aufgabentext, Foto, Tabellen, Texte) in einen
    Container schreiben. */
 
 function renderTaskContent(container, content) {
@@ -442,8 +539,8 @@ function renderTaskContent(container, content) {
             content.image;
 
         image.alt =
-            "Foto konnte nicht geladen werden. Bitte laden Sie die " +
-            "Seite neu – Ihr Fortschritt bleibt erhalten.";
+            "Foto konnte nicht geladen werden. Bitte aktualisieren Sie die " +
+            "Seite – Ihr Fortschritt bleibt erhalten.";
 
         image.className =
             "task-image";
@@ -457,7 +554,7 @@ function renderTaskContent(container, content) {
 
     if (content.groupId === "speed_dating") {
 
-        // Tabelle 1: Stammdaten & Interessenähnlichkeit
+        // Tabelle 1: Eigene Angaben
 
         container.appendChild(
             buildDataTable(
@@ -482,7 +579,7 @@ function renderTaskContent(container, content) {
             tableNote
         );
 
-        // Tabelle 2: Bewertungen
+        // Tabelle 2: Bewertungen des Partners
 
         container.appendChild(
             buildDataTable(
@@ -604,8 +701,7 @@ function loadTask() {
         document.createElement("p");
 
     introText.textContent =
-        task.chatIntro ||
-        "Bitte geben Sie Ihre Antwort auf die Aufgabe ein.";
+        task.chatIntro;
 
     introContent.appendChild(
         introText
@@ -667,26 +763,24 @@ function createAnswerButtons(
     answerArea.innerHTML = "";
 
 
-    options.forEach(
-        option => {
+    for (const option of options) {
 
-            const button =
-                document.createElement("button");
+        const button =
+            document.createElement("button");
 
-            button.className =
-                "answer-button";
+        button.className =
+            "answer-button";
 
-            button.textContent =
-                option;
+        button.textContent =
+            option;
 
-            button.dataset.answer =
-                option;
+        button.dataset.answer =
+            option;
 
-            answerArea.appendChild(
-                button
-            );
-        }
-    );
+        answerArea.appendChild(
+            button
+        );
+    }
 
 
     enableAnswerButtons();
@@ -836,6 +930,17 @@ function showAIResponse() {
         "message bot-message";
 
 
+    // Begründung nur anzeigen, wenn es eine gibt
+
+    let explanationHtml = "";
+
+    if (task.aiExplanation) {
+
+        explanationHtml =
+            "<p> Begründung: " + escapeHtml(task.aiExplanation) + "</p>";
+    }
+
+
     message.innerHTML = `
 
         <div class="avatar">
@@ -861,11 +966,7 @@ function showAIResponse() {
                 </strong>
             </p>
 
-            ${
-                task.aiExplanation
-                    ? `<p>${escapeHtml(task.aiExplanation)}</p>`
-                    : ""
-            }
+            ${explanationHtml}
 
         </div>
 
@@ -908,10 +1009,13 @@ async function saveTrial(secondAnswer) {
     const changedAnswer =
         firstAnswer !== secondAnswer;
 
-    const secondResponseTimeMs =
-        aiShownAt !== null ?
-            Date.now() - aiShownAt :
-            null;
+    let secondResponseTimeMs = null;
+
+    if (aiShownAt !== null) {
+
+        secondResponseTimeMs =
+            Date.now() - aiShownAt;
+    }
 
     const trialData = {
 
@@ -973,13 +1077,17 @@ async function saveTrial(secondAnswer) {
     }
 
 
-    const {
-        error
-    } = await supabaseClient
-        .from("trials")
-        .insert(
-            trialData
-        );
+    // Datensatz in die Supabase-Tabelle "trials" schreiben und auf die Antwort warten
+
+    const result =
+        await supabaseClient
+            .from("trials")
+            .insert(
+                trialData
+            );
+
+    const error =
+        result.error;
 
 
     if (error) {
@@ -1000,6 +1108,101 @@ async function saveTrial(secondAnswer) {
 }
 
 
+/* Klick auf einen Antwortbutton verarbeiten */
+
+async function handleAnswerClick(button) {
+
+    const answer =
+        button.dataset.answer;
+
+
+    /* Erste Nutzer-Antwort */
+
+    if (
+        !waitingForSecondAnswer
+    ) {
+
+        firstAnswer =
+            answer;
+
+        if (taskShownAt !== null) {
+
+            firstResponseTimeMs =
+                Date.now() - taskShownAt;
+
+        } else {
+
+            firstResponseTimeMs =
+                null;
+        }
+
+
+        addUserMessage(
+            answer
+        );
+
+
+        disableAnswerButtons();
+
+
+        showTypingIndicator();
+
+
+        // KI-Antwort erscheint nach 1,8 Sekunden
+
+        setTimeout(
+            showAIResponse,
+            1800
+        );
+
+
+    }
+
+    /* Zweite Nutzer-Antwort (nach KI-Empfehlung) */
+
+    else {
+
+        addUserMessage(
+            answer
+        );
+
+
+        disableAnswerButtons();
+
+
+        try {
+
+            await saveTrial(
+                answer
+            );
+
+
+            nextTask();
+
+
+        }
+
+        catch (error) {
+
+            console.error(
+                error
+            );
+
+
+            document
+                .getElementById(
+                    "status-message"
+                )
+                .textContent =
+                "Beim Speichern ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.";
+
+
+            enableAnswerButtons();
+        }
+    }
+}
+
+
 /* Antwortbuttons aktivieren */
 
 function enableAnswerButtons() {
@@ -1010,101 +1213,22 @@ function enableAnswerButtons() {
         );
 
 
-    buttons.forEach(
-        button => {
+    for (const button of buttons) {
 
-            button.disabled =
-                false;
-
-
-            button.onclick =
-                async () => {
-
-                    const answer =
-                        button.dataset.answer;
+        button.disabled =
+            false;
 
 
-                    /* Erste Nutzer-Antwort */ 
+        // Beim Klick wird handleAnswerClick mit genau diesem Button aufgerufen
 
-                    if (
-                        !waitingForSecondAnswer
-                    ) {
+        button.onclick =
+            function () {
 
-                        firstAnswer =
-                            answer;
-
-                        firstResponseTimeMs =
-                            taskShownAt !== null ?
-                                Date.now() - taskShownAt :
-                                null;
-
-
-                        addUserMessage(
-                            answer
-                        );
-
-
-                        disableAnswerButtons();
-
-
-                        showTypingIndicator();
-
-
-                        // KI-Antwort erscheint nach 1,8 Sekunden
-
-                        setTimeout(
-                            showAIResponse,
-                            1800
-                        );
-
-
-                    }
-
-                    /* Zweite Nutzer-Antwort (nach KI-Empfehlung) */
-
-                    else {
-
-                        addUserMessage(
-                            answer
-                        );
-
-
-                        disableAnswerButtons();
-
-
-                        try {
-
-                            await saveTrial(
-                                answer
-                            );
-
-
-                            nextTask();
-
-
-                        }
-
-                        catch (error) {
-
-                            console.error(
-                                error
-                            );
-
-
-                            document
-                                .getElementById(
-                                    "status-message"
-                                )
-                                .textContent =
-                                "Beim Speichern ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.";
-
-
-                            enableAnswerButtons();
-                        }
-                    }
-                };
-        }
-    );
+                handleAnswerClick(
+                    button
+                );
+            };
+    }
 }
 
 
@@ -1118,13 +1242,11 @@ function disableAnswerButtons() {
         );
 
 
-    buttons.forEach(
-        button => {
+    for (const button of buttons) {
 
-            button.disabled =
-                true;
-        }
-    );
+        button.disabled =
+            true;
+    }
 }
 
 
@@ -1143,20 +1265,31 @@ const viewSections = {
 
 function showView(viewName) {
 
-    Object.entries(viewSections).forEach(
-        ([name, sectionIds]) => {
+    // Alle Ansichten durchgehen: nur die gewünschte wird angezeigt,
+    // alle anderen werden versteckt
 
-            sectionIds.forEach(
-                sectionId => {
+    for (const name in viewSections) {
 
-                    document.getElementById(
-                        sectionId
-                    ).hidden =
-                        name !== viewName;
-                }
-            );
+        const sectionIds =
+            viewSections[name];
+
+        for (const sectionId of sectionIds) {
+
+            const section =
+                document.getElementById(
+                    sectionId
+                );
+
+            if (name === viewName) {
+
+                section.hidden = false;
+
+            } else {
+
+                section.hidden = true;
+            }
         }
-    );
+    }
 
     window.scrollTo(
         0,
@@ -1187,10 +1320,21 @@ function showGroupIntro(task) {
     ).textContent =
         task.groupLabel;
 
-    document.getElementById(
-        "group-intro-text"
-    ).textContent =
-        task.groupIntro || "";
+    const groupIntroText =
+        document.getElementById(
+            "group-intro-text"
+        );
+
+    if (task.groupIntro) {
+
+        groupIntroText.textContent =
+            task.groupIntro;
+
+    } else {
+
+        groupIntroText.textContent =
+            "";
+    }
 
     showView("group-intro");
 }
@@ -1279,17 +1423,26 @@ function startRatingBlock() {
 
 function showRatingScreen() {
 
-    const group =
-        taskGroups.find(
-            candidate =>
-                candidate.groupId === ratingGroups[currentRating].groupId
-        );
+    // Passende Aufgabengruppe zur aktuellen Bewertung suchen
 
-    const exampleVariant =
-        group.variants.find(
-            variant => variant.variantId === group.exampleVariantId
-        ) ||
-        group.variants[0];
+    const currentGroupId =
+        ratingGroups[currentRating].groupId;
+
+    let group = null;
+
+    for (const candidate of taskGroups) {
+
+        if (candidate.groupId === currentGroupId) {
+
+            group = candidate;
+
+            break;
+        }
+    }
+
+    // Als Beispielaufgabe dient immer die erste Variante der Gruppe
+
+    const exampleVariant = group.variants[0];
 
     document.getElementById(
         "task-counter"
@@ -1306,18 +1459,30 @@ function showRatingScreen() {
     ).textContent =
         group.groupLabel;
 
+    // Inhalte der Beispielaufgabe zusammenstellen
+
+    const exampleContent = {
+
+        groupId: group.groupId,
+        prompt: group.prompt,
+
+        image: exampleVariant.image,
+        table: exampleVariant.table,
+        table1: exampleVariant.table1,
+        table2: exampleVariant.table2,
+        information: exampleVariant.information,
+        hotelName: exampleVariant.hotelName,
+        location: exampleVariant.location
+    };
+
     renderTaskContent(
         document.getElementById(
             "rating-example"
         ),
-        {
-            ...exampleVariant,
-            groupId: group.groupId,
-            prompt: group.prompt
-        }
+        exampleContent
     );
 
-    /* Antwortoptionen nicht klickbar */
+    /* Antwortoptionen aus Beispielaufhabe deaktivieren */
 
     const exampleOptions =
         document.getElementById(
@@ -1326,29 +1491,27 @@ function showRatingScreen() {
 
     exampleOptions.innerHTML = "";
 
-    group.options.forEach(
-        option => {
+    for (const option of group.options) {
 
-            const button =
-                document.createElement("button");
+        const button =
+            document.createElement("button");
 
-            button.className =
-                "answer-button";
+        button.className =
+            "answer-button";
 
-            button.textContent =
-                option;
+        button.textContent =
+            option;
 
-            button.disabled =
-                true;
+        button.disabled =
+            true;
 
-            button.tabIndex =
-                -1;
+        button.tabIndex =
+            -1;
 
-            exampleOptions.appendChild(
-                button
-            );
-        }
-    );
+        exampleOptions.appendChild(
+            button
+        );
+    }
 
     resetRatingSliders();
 
@@ -1370,27 +1533,25 @@ const ratingSliderIds = [
 
 function resetRatingSliders() {
 
-    ratingSliderIds.forEach(
-        sliderId => {
+    for (const sliderId of ratingSliderIds) {
 
-            const slider =
-                document.getElementById(
-                    sliderId
-                );
-
-            slider.value =
-                0;
-
-            slider.classList.add(
-                "untouched"
+        const slider =
+            document.getElementById(
+                sliderId
             );
 
-            document.getElementById(
-                `${sliderId}-value`
-            ).textContent =
-                "–";
-        }
-    );
+        slider.value =
+            0;
+
+        slider.classList.add(
+            "untouched"
+        );
+
+        document.getElementById(
+            sliderId + "-value"
+        ).textContent =
+            "–";
+    }
 
     updateRatingSubmitState();
 }
@@ -1402,7 +1563,7 @@ function markSliderTouched(slider) {
     );
 
     document.getElementById(
-        `${slider.id}-value`
+        slider.id + "-value"
     ).textContent =
         slider.value;
 
@@ -1413,15 +1574,23 @@ function markSliderTouched(slider) {
 
 function updateRatingSubmitState() {
 
-    const allTouched =
-        ratingSliderIds.every(
-            sliderId =>
-                !document.getElementById(
-                    sliderId
-                ).classList.contains(
-                    "untouched"
-                )
-        );
+    // Annahme: alle Slider wurden bewegt. Sobald einer noch
+    // "untouched" ist, wird allTouched auf false gesetzt.
+
+    let allTouched = true;
+
+    for (const sliderId of ratingSliderIds) {
+
+        const slider =
+            document.getElementById(
+                sliderId
+            );
+
+        if (slider.classList.contains("untouched")) {
+
+            allTouched = false;
+        }
+    }
 
     document.getElementById(
         "rating-submit"
@@ -1434,69 +1603,84 @@ function updateRatingSubmitState() {
         allTouched;
 }
 
-ratingSliderIds.forEach(
-    sliderId => {
+for (const sliderId of ratingSliderIds) {
 
-        const slider =
-            document.getElementById(
-                sliderId
-            );
-
-        // "input" deckt Ziehen und Tastatur ab, "pointerdown" auch
-        // einen Klick genau auf den aktuellen Wert (z.B. 0)
-
-        slider.addEventListener(
-            "input",
-            () => markSliderTouched(slider)
+    const slider =
+        document.getElementById(
+            sliderId
         );
 
-        slider.addEventListener(
-            "pointerdown",
-            () => markSliderTouched(slider)
-        );
-    }
-);
+    // "input" deckt Ziehen und Tastatur ab, "pointerdown" auch
+    // einen Klick genau auf den aktuellen Wert (z.B. 0)
+
+    slider.addEventListener(
+        "input",
+        function () {
+
+            markSliderTouched(slider);
+        }
+    );
+
+    slider.addEventListener(
+        "pointerdown",
+        function () {
+
+            markSliderTouched(slider);
+        }
+    );
+}
 
 
-/* Einschätzung an Supabase senden */
+/* Bewertung an Supabase senden */
 
 async function saveGroupRating(humanRating, aiRating) {
 
     const ratingGroup =
         ratingGroups[currentRating];
 
-    const responseTimeMs =
-        ratingShownAt !== null ?
-            Date.now() - ratingShownAt :
-            null;
+    let responseTimeMs = null;
 
-    const {
-        error
-    } = await supabaseClient
-        .from("group_ratings")
-        .insert({
+    if (ratingShownAt !== null) {
 
-            participant_id:
-                participantId,
+        responseTimeMs =
+            Date.now() - ratingShownAt;
+    }
 
-            group_id:
-                ratingGroup.groupId,
+    const ratingData = {
 
-            group_order:
-                ratingGroup.groupOrder,
+        participant_id:
+            participantId,
 
-            human_rating:
-                humanRating,
+        group_id:
+            ratingGroup.groupId,
 
-            ai_rating:
-                aiRating,
+        group_order:
+            ratingGroup.groupOrder,
 
-            rating_difference:
-                humanRating - aiRating,
+        human_rating:
+            humanRating,
 
-            response_time_ms:
-                responseTimeMs
-        });
+        ai_rating:
+            aiRating,
+
+        rating_difference:
+            humanRating - aiRating,
+
+        response_time_ms:
+            responseTimeMs
+    };
+
+    // Datensatz in die Supabase-Tabelle "group_ratings" schreiben und auf die Antwort warten
+
+    const result =
+        await supabaseClient
+            .from("group_ratings")
+            .insert(
+                ratingData
+            );
+
+    const error =
+        result.error;
 
 
     if (error) {
@@ -1543,6 +1727,21 @@ function nextRating() {
 
 function showCompletion() {
 
+    // Abschlusstext: im Testmodus ohne Weiterleitung
+
+    let completionText;
+
+    if (isTestMode) {
+
+        completionText =
+            "Vielen Dank für Ihre Teilnahme. (Testmodus – keine Weiterleitung.)";
+
+    } else {
+
+        completionText =
+            "Vielen Dank für Ihre Teilnahme. Sie werden gleich zur Umfrage zurückgeleitet …";
+    }
+
     showView("task");
 
     document.getElementById(
@@ -1582,11 +1781,7 @@ function showCompletion() {
             <div class="message-content">
 
                 <p>
-                    ${
-                        isTestMode ?
-                            "Vielen Dank für Ihre Teilnahme. (Testmodus – keine Weiterleitung.)" :
-                            "Vielen Dank für Ihre Teilnahme. Sie werden gleich zur Umfrage zurückgeleitet …"
-                    }
+                    ${completionText}
                 </p>
 
             </div>
@@ -1609,24 +1804,30 @@ function showCompletion() {
 
     if (!isTestMode) {
 
-        setTimeout(
-            () => {
+        // Nach kurzer Wartezeit zur Abschluss-Umfrage weiterleiten
 
-                window.location.href =
-                    EXIT_SURVEY_URL +
-                    "?id=" +
-                    encodeURIComponent(
-                        participantId
-                    );
-            },
+        setTimeout(
+            redirectToExitSurvey,
             EXIT_REDIRECT_DELAY_MS
         );
     }
 }
 
 
-/* Fehlerfall: Seite wurde ohne gültige Teilnehmer-ID aufgerufen
-   (z. B. direkter Aufruf statt über den Studienlink) */
+/* Weiterleitung zur LimeSurvey-Abschlussumfrage (mit Teilnehmer-ID) */
+
+function redirectToExitSurvey() {
+
+    window.location.href =
+        EXIT_SURVEY_URL +
+        "?id=" +
+        encodeURIComponent(
+            participantId
+        );
+}
+
+
+/* Abfangen: Seite wurde ohne gültige Teilnehmer-ID aufgerufen */
 
 function showMissingIdError() {
 
@@ -1671,7 +1872,7 @@ document.getElementById(
     "study-intro-continue"
 ).addEventListener(
     "click",
-    () => {
+    function () {
 
         goToCurrentTask();
     }
@@ -1684,7 +1885,7 @@ document.getElementById(
     "group-intro-continue"
 ).addEventListener(
     "click",
-    () => {
+    function () {
 
         if (inRatingBlock) {
 
@@ -1706,7 +1907,7 @@ document.getElementById(
     "rating-submit"
 ).addEventListener(
     "click",
-    async () => {
+    async function () {
 
         const submitButton =
             document.getElementById(
@@ -1716,19 +1917,27 @@ document.getElementById(
         submitButton.disabled =
             true;
 
+        // Slider-Werte auslesen und in Zahlen umwandeln
+
+        const humanRating =
+            Number(
+                document.getElementById(
+                    "rating-human"
+                ).value
+            );
+
+        const aiRating =
+            Number(
+                document.getElementById(
+                    "rating-ai"
+                ).value
+            );
+
         try {
 
             await saveGroupRating(
-                Number(
-                    document.getElementById(
-                        "rating-human"
-                    ).value
-                ),
-                Number(
-                    document.getElementById(
-                        "rating-ai"
-                    ).value
-                )
+                humanRating,
+                aiRating
             );
 
             document.getElementById(

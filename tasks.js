@@ -3,10 +3,10 @@
    ==========================================================
 
    Jede Gruppe enthält die gruppenweiten Angaben (Bezeichnung,
-   Beispielvariante für den Bewertungsblock (exampleVariantId),
    Einleitungstext, Frage, Chat-Intro, Antwortoptionen) und
    5 Varianten mit den eigentlichen Daten (Items aus der
-   Pilotstudie, variantIds wie dort). Pro Variante wird die
+   Pilotstudie, variantIds wie dort). Die erste Variante dient
+   als Beispiel im Bewertungsblock. Pro Variante wird die
    richtige Antwort sowie je eine Begründung für den Fall "KI
    empfiehlt richtig" und "KI empfiehlt falsch" hinterlegt -
    welche der beiden angezeigt wird, ergibt sich automatisch
@@ -20,8 +20,6 @@ const taskGroups = [
         groupId: "speed_dating",
 
         groupLabel: "Speed-Dating-Partner",
-
-        exampleVariantId: "speed_dating_01",
 
         groupIntro:
             "In diesem Aufgabenblock sehen Sie jeweils zwei Teilnehmer eines " +
@@ -187,8 +185,6 @@ const taskGroups = [
 
         groupLabel: "Hotelrezension",
 
-        exampleVariantId: "hotel_review_01",
-
         groupIntro:
             "In diesem Aufgabenblock lesen Sie Hotelrezensionen. " +
             "Jede Rezension ist in zwei Teile gegliedert: einen positiven " +
@@ -286,8 +282,6 @@ const taskGroups = [
 
         groupLabel: "Emotionserkennung",
 
-        exampleVariantId: "emotion_01",
-
         groupIntro:
             "In diesem Aufgabenblock sehen Sie jeweils ein Foto einer Person. " +
             "Es handelt sich um Standbilder realer Personen, die in einem emotionalen Moment " +
@@ -352,8 +346,6 @@ const taskGroups = [
         groupId: "real_estate",
 
         groupLabel: "Immobilienbewertung",
-
-        exampleVariantId: "real_estate_01",
 
         groupIntro:
             "In diesem Aufgabenblock sehen Sie Eckdaten einer realen Immobilie. " +
@@ -474,8 +466,6 @@ const taskGroups = [
 
         groupLabel: "Regenvorhersage",
 
-        exampleVariantId: "rain_forecast_01",
-
         groupIntro:
             "In diesem Aufgabenblock sehen Sie jeweils Wetterdaten für " +
             "einen Tag in Hamburg (Fuhlsbüttel). Die Daten sind einer lokalen Wetterstation " +
@@ -578,12 +568,12 @@ const taskGroups = [
 
 ];
 
-/* Prüfung: Jede richtige Antwort muss exakt einer Antwortoption
-   entsprechen, sonst stimmen KI-Empfehlung und Auswertung nicht. */
+/* Fix: Jede richtige Antwort muss exakt einer Antwortoption
+   entsprechen, bei Typos geht die Auswertung schief. */
 
-taskGroups.forEach(group => {
+for (const group of taskGroups) {
 
-    group.variants.forEach(variant => {
+    for (const variant of group.variants) {
 
         if (!group.options.includes(variant.correctAnswer)) {
 
@@ -593,5 +583,5 @@ taskGroups.forEach(group => {
                 variant.correctAnswer
             );
         }
-    });
-});
+    }
+}
