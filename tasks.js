@@ -1,21 +1,14 @@
-/* ==========================================================
-   Taskgruppen (5 Themen à 5 Varianten)
-   ==========================================================
+/* 5 Taskgruppen mit je 5 Instanzen
 
-   Jede Gruppe enthält die gruppenweiten Angaben (Bezeichnung,
-   Einleitungstext, Frage, Chat-Intro, Antwortoptionen) und
-   5 Varianten mit den eigentlichen Daten (Items aus der
-   Pilotstudie, variantIds wie dort). Die erste Variante dient
-   als Beispiel im Bewertungsblock. Pro Variante wird die
-   richtige Antwort sowie je eine Begründung für den Fall "KI
-   empfiehlt richtig" und "KI empfiehlt falsch" hinterlegt -
-   welche der beiden angezeigt wird, ergibt sich automatisch
-   aus der Position der Variante innerhalb der (randomisierten)
-   Gruppen-Reihenfolge (siehe buildSessionTasks). */
+   Jede Taskgruppe enthält einen Einleitungstext, Frage, Chat-Intro 
+   und Antwortoptionen. groupLabel und groupIntro wird im Einleitungs-Screen  
+   jedes Aufgabenblocks angezeigt. Die 5 Varianten enthalten die konkreten Inhalte. 
+   Jede Variante hat eine richtige Antwort. Es gibt vorgefertigte KI-Begründungen, 
+   je nachdem ob sie "richtig" oder "falsch" empfiehlt. */
 
 const taskGroups = [
 
-    /* Taskgruppe: Speed-Dating-Partner (Tabelle) */
+    /* Taskgruppe: Speed-Dating-Partner */
     {
         groupId: "speed_dating",
 
@@ -179,7 +172,7 @@ const taskGroups = [
         ]
     },
 
-    /* Taskgruppe: Hotelrezension (Text) */
+    /* Taskgruppe: Hotelrezensionen */
     {
         groupId: "hotel_review",
 
@@ -341,7 +334,7 @@ const taskGroups = [
         ]
     },
 
-    /* Taskgruppe: Immobilienwerte (Foto + Tabelle) */
+    /* Taskgruppe: Immobilienpreise */
     {
         groupId: "real_estate",
 
@@ -460,7 +453,7 @@ const taskGroups = [
         ]
     },
 
-    /* Taskgruppe: Regenvorhersage (Tabelle) */
+    /* Taskgruppe: Regenvorhersage */
     {
         groupId: "rain_forecast",
 
@@ -569,7 +562,7 @@ const taskGroups = [
 ];
 
 /* Fix: Jede richtige Antwort muss exakt einer Antwortoption
-   entsprechen, bei Typos geht die Auswertung schief. */
+   entsprechen, bei Typos geht die Auswertung von answer_correct schief. */
 
 for (const group of taskGroups) {
 
