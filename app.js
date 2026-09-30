@@ -1804,7 +1804,7 @@ function showCompletion() {
 
     if (!isTestMode) {
 
-        // Nach kurzer Wartezeit zur Abschluss-Umfrage weiterleiten
+        // Nach kurzer Wartezeit (ist in config.js festgelegt) zur Abschluss-Umfrage weiterleiten
 
         setTimeout(
             redirectToExitSurvey,

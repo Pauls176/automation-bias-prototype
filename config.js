@@ -1,4 +1,4 @@
-/* SupaBase Einbindung */
+// SupaBase Verbindung
 
 const SUPABASE_URL =
     "https://gemtcvzzaaetckdivivu.supabase.co";
@@ -13,7 +13,7 @@ const supabaseClient =
     );
 
 
-/* LimeSurvey-Anbindung: Rückleitungs-Umfrage nach Abschluss des Prototyps */
+// Weiterleitung an LimeSurvey nach Abschluss der Fragen
 
 // TODO: URL der Hauptstudie eintragen (derzeit noch die der Pilotstudie)
 const EXIT_SURVEY_URL =
