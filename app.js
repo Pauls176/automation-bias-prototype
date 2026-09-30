@@ -1,6 +1,4 @@
-/* Teilnehmer-ID: im Echtbetrieb kommt sie per ?id=... von LimeSurvey.
-   Testmodus (lokal, file://, oder ?test=1) erlaubt den Durchlauf ohne
-   LimeSurvey und erzeugt stattdessen eine zufällige Test-ID. */
+/* Teilnehmer-ID: als URL-Paramter von LimeSurvey übergeben */
 
 const urlParams =
     new URLSearchParams(window.location.search);
@@ -8,6 +6,7 @@ const urlParams =
 const idFromUrl =
     urlParams.get("id");
 
+/* Testmodus, lokal oder im Broswer mit /?test=1 */
 const isTestMode =
     location.hostname === "localhost" ||
     location.hostname === "127.0.0.1" ||
@@ -48,11 +47,10 @@ function shuffle(array) {
 }
 
 /* Session-Aufgabenliste aufbauen:
-   - Reihenfolge der Taskgruppen wird randomisiert
-   - Reihenfolge der 5 Varianten je Gruppe wird randomisiert
-   - Innerhalb jeder Gruppe empfiehlt die KI in den ersten
-     3 Positionen die richtige, in den letzten 2 Positionen
-     die falsche Antwort (inkl. passender Begründung)
+   - Randomisierung der Aufgabenblöcke (taskGroups)
+   - Randomisierung der 5 Aufgaben (variants) je Block
+   - (Innerhalb eines Blocks) sind die KI-Empfehlungen ersten drei korrekt
+     und letzten beiden inkorrekt (inkl. passender Begründung)
    - groupOrder hält fest, an welcher Stelle eine Gruppe in
      der randomisierten Reihenfolge durchlaufen wurde
    - isFirstInGroup / isLastInGroup markieren die erste bzw.
@@ -122,21 +120,17 @@ function buildSessionTasks(groups) {
     return sessionTasks;
 }
 
-/* Fortschritt pro Teilnehmer-ID im localStorage sichern, damit ein
-   einfacher Seiten-Reload (z. B. versehentlich F5) die Studie an der
-   gleichen Stelle fortsetzt, statt Aufgaben doppelt zu stellen.
-   Ein Hard-Refresh (Strg+Shift+R) sowie der Testmodus starten
-   bewusst von vorne. */
+/* Fortschritt pro Teilnehmer-ID im localStorage sichern (damit ein
+   Teilnehmer bei Seiten-Refresh nicht seinen Fortschritt verliert.
+   Für Test-Zwecke startet ein Hard-Refresh (Strg+Shift+R) und der Testmodus
+   immer von vorne. */
 
 const progressStorageKey =
     (!isTestMode && idFromUrl) ?
         ("abp_progress_" + idFromUrl) :
         null;
 
-/* Erkennt einen Hard-Refresh anhand der Navigation-/Resource-Timing-Daten:
-   Bei einem normalen Reload beantwortet der Server das HTML meist aus dem
-   Cache oder per 304 (kleines transferSize). Ein Hard-Refresh erzwingt das
-   Umgehen des Caches, wodurch die Seite vollständig neu übertragen wird. */
+/* Erkennt einen Hard-Refresh anhand des Caches. */
 
 function isHardReload() {
 
@@ -160,6 +154,8 @@ function isHardReload() {
         return false;
     }
 }
+
+/* Gespeicherten Fortschritt aus dem localStorage laden */
 
 function loadStoredProgress() {
 
@@ -196,16 +192,15 @@ const isFreshSession =
         storedProgress.tasks.length > 0
     );
 
-/* Bei fortgesetzter Sitzung dieselbe (bereits randomisierte)
-   Aufgabenliste weiterverwenden, sonst neu erzeugen */
+/* Bei fortgesetzter Sitzung wird dieselbe (bereits randomisierte)
+   Aufgabenliste weiterbenutzt */
 
 const tasks =
     isFreshSession ?
         buildSessionTasks(taskGroups) :
         storedProgress.tasks;
 
-/* Anzahl Blöcke: die Aufgabenblöcke plus der abschließende
-   Bewertungsblock (Mensch vs. KI) */
+/* Anzahl Blöcke: Aufgabenblöcke + Bewertungsblock */
 
 const totalBlocks =
     taskGroups.length + 1;
@@ -224,7 +219,7 @@ const ratingBlock = {
         "ein Mensch und wie gut eine KI solche Aufgaben lösen kann."
 };
 
-/* Reihenfolge der Bewertungsbildschirme = Reihenfolge, in der die
+/* Bewertung soll in derselben Reihenfolge stattfinden, in der die
    Blöcke im Aufgabenteil durchlaufen wurden */
 
 function buildRatingGroups(sessionTasks) {
@@ -252,10 +247,9 @@ let firstAnswer = null;
 
 let waitingForSecondAnswer = false;
 
-/* Antwortzeiten in ganzen Millisekunden:
+/* Antwortzeiten in Millisekunden:
    - erste Antwort: ab Anzeige der Aufgabe
-   - zweite Antwort: ab Anzeige der KI-Empfehlung
-     (die Tipp-Animation zählt nicht mit) */
+   - zweite Antwort: ab Anzeige der KI-Empfehlung */
 
 let taskShownAt = null;
 
@@ -318,10 +312,7 @@ if (isFreshSession) {
     saveProgress();
 }
 
-/* Erzeugt ein <table>-Element aus Kopf- und Datenzeilen.
-   Enthält eine Zeile weniger Zellen als Kopfspalten vorhanden sind
-   (z.B. Interessenähnlichkeit), spannt die letzte Zelle über die
-   verbleibenden Spalten. */
+/* Tabellen für Aufgabenstellungen bauen */
 
 function buildDataTable(tableData, className) {
 
@@ -332,7 +323,7 @@ function buildDataTable(tableData, className) {
         className;
 
 
-    // Tabellenkopf
+    // Tabellen-Header
 
     const thead =
         document.createElement("thead");
@@ -364,7 +355,7 @@ function buildDataTable(tableData, className) {
     );
 
 
-    // Tabellenkörper
+    // Tabellen-Data
 
     const tbody =
         document.createElement("tbody");
@@ -383,6 +374,9 @@ function buildDataTable(tableData, className) {
 
                     td.textContent =
                         cell;
+
+                    /* Für Speed-Dating Tabelle muss die letzte Zelle 
+                    sich über beide Spalten erstrecken */
 
                     const isLastCell =
                         index === row.length - 1;
@@ -416,8 +410,7 @@ function buildDataTable(tableData, className) {
 }
 
 /* Aufgabeninhalt (Aufgabentext, Foto, Tabelle(n), Text) in einen
-   Container schreiben. Wird für die echten Aufgaben und für die
-   ausgegrauten Beispiele im Bewertungsblock verwendet. */
+   Container schreiben. */
 
 function renderTaskContent(container, content) {
 
@@ -426,7 +419,7 @@ function renderTaskContent(container, content) {
     container.innerHTML = "";
 
 
-    /* Aufgabentext */
+    // Aufgabentext
 
     const prompt =
         document.createElement("p");
@@ -438,7 +431,7 @@ function renderTaskContent(container, content) {
         prompt
     );
 
-    /* Foto (kann zusätzlich zu einer Tabelle auftreten, z.B. Immobilien) */
+    // Foto 
 
     if (content.image) {
 
@@ -460,7 +453,7 @@ function renderTaskContent(container, content) {
         );
     }
 
-    /* Tabelle(n) */
+    // Tabelle, mit Sonderregelungen für die Speed-Dating-Tabellen
 
     if (content.groupId === "speed_dating") {
 
@@ -508,7 +501,7 @@ function renderTaskContent(container, content) {
         );
     }
 
-    /* Text */
+    // Text
 
     if (content.information) {
 
@@ -543,14 +536,14 @@ function renderTaskContent(container, content) {
     }
 }
 
-/* Aufgabe laden */
+/* Neue Aufgabe laden */
 
 function loadTask() {
 
     const task =
         tasks[currentTask];
 
-    /* Fortschrittsanzeige */
+    // Fortschrittsanzeige zeigt Anzahl Blöcke für mehr Übersichtlichtkeit
 
     document.getElementById(
         "task-counter"
@@ -558,14 +551,14 @@ function loadTask() {
         `Block ${task.groupOrder} von ${totalBlocks}`;
 
 
-    /* Titel */
+    // Titel ist die Anzahl Aufgaben innerhalb eines Blocks
 
     document.getElementById(
         "task-title"
     ).textContent =
         `Aufgabe ${task.groupPosition}`;
 
-    /* Aufgabenbereich */
+    // Aufgabeninhalt, d.h. Texte, Tabellen und Bilder
 
      const taskDescription =
         document.getElementById(
@@ -577,7 +570,7 @@ function loadTask() {
         task
     );
 
-    /* Chat zurücksetzen */
+    // KI-Chatfenster zurücksetzen
 
     const chatMessages =
         document.getElementById(
@@ -630,7 +623,7 @@ function loadTask() {
         introMessage
     );
 
-    /* Zustand zurücksetzen */
+    // Zustand zurücksetzen, um für neue Antwort bereit zu sein
 
      firstAnswer =
         null;
@@ -647,13 +640,13 @@ function loadTask() {
     taskShownAt =
         Date.now();
 
-    /* Antwortbuttons erzeugen */
+    // Antwortbuttons erzeugen
 
      createAnswerButtons(
         task.options
     );
 
-    /* Neue Aufgabe immer von oben beginnen */
+    // Bei neu geladener Aufgabe immer nach oben scrollen, um Fehler zu vermeiden
 
     window.scrollTo(
         0,
@@ -745,7 +738,7 @@ function addUserMessage(
 }
 
 
-/* HTML escapen */
+/* Umwandlung von Text und HTML */
 
 function escapeHtml(
     text
@@ -760,7 +753,7 @@ function escapeHtml(
     return div.innerHTML;
 }
 
-/* KI-Ladeanimation */
+/* Animation, dass KI schreibt */
 
 function showTypingIndicator() {
 
@@ -810,7 +803,7 @@ function showTypingIndicator() {
         chat.scrollHeight;
 }
 
-/* vorgefertigte KI-Antwort */
+/* KI-Antwort (Empfehlung + Begründung) anzeigen */
 
 function showAIResponse() {
 
@@ -898,11 +891,13 @@ function showAIResponse() {
     enableAnswerButtons();
 }
 
-/* Daten an Supabase senden */
+/* Daten an Supabase übergeben */
 
 async function saveTrial(secondAnswer) {
 
     const task = tasks[currentTask];
+
+    // berechnet weitere Werte, wie Korrektheit und Antwortzeit, die ebenfalls übergeben werden
 
     const firstAnswerCorrect =
         firstAnswer === task.correctAnswer;
@@ -967,8 +962,7 @@ async function saveTrial(secondAnswer) {
     };
 
 
-    // Nur im Testmodus ausgeben, damit Teilnehmende in der Konsole
-    // keine richtigen Antworten / KI-Bedingungen sehen
+    // Konsolen-Ausgaben (nur im Testmodus) für Debugging
 
     if (isTestMode) {
 
@@ -1030,9 +1024,7 @@ function enableAnswerButtons() {
                         button.dataset.answer;
 
 
-                    // ========================================
-                    // ERSTE ANTWORT
-                    // ========================================
+                    /* Erste Nutzer-Antwort */ 
 
                     if (
                         !waitingForSecondAnswer
@@ -1058,8 +1050,7 @@ function enableAnswerButtons() {
                         showTypingIndicator();
 
 
-                        // KI erscheint nach
-                        // 1,8 Sekunden
+                        // KI-Antwort erscheint nach 1,8 Sekunden
 
                         setTimeout(
                             showAIResponse,
@@ -1069,9 +1060,7 @@ function enableAnswerButtons() {
 
                     }
 
-                    // ========================================
-                    // ZWEITE ANTWORT
-                    // ========================================
+                    /* Zweite Nutzer-Antwort (nach KI-Empfehlung) */
 
                     else {
 
@@ -1139,8 +1128,7 @@ function disableAnswerButtons() {
 }
 
 
-/* Ansicht umschalten: blendet genau eine Ansicht ein.
-   "task" zeigt Aufgabenbereich und Chat gemeinsam. */
+/* Ansicht umschalten: Einleitungs-Screens, Aufgaben-Screens oder Bewertungs-Screens */
 
 const viewSections = {
 
@@ -1177,7 +1165,7 @@ function showView(viewName) {
 }
 
 
-/* Einleitungsbildschirm für den gesamten Aufgabenteil anzeigen */
+/* Erster Screen: Studien-Erklärung */
 
 function showStudyIntro() {
 
@@ -1185,7 +1173,7 @@ function showStudyIntro() {
 }
 
 
-/* Gruppen-Einleitungsbildschirm anzeigen */
+/* Screen: Einleitung in jeden Aufgabenblock (erklärt die Aufgabe grob) */
 
 function showGroupIntro(task) {
 
@@ -1209,7 +1197,7 @@ function showGroupIntro(task) {
 
 
 /* Aktuelle Aufgabe anzeigen: bei der ersten Aufgabe eines
-   Blocks zuerst die Gruppen-Einleitung */
+   Blocks zuerst den Gruppen-Einleitungs-Screen */
 
 function goToCurrentTask() {
 
@@ -1231,7 +1219,8 @@ function goToCurrentTask() {
 }
 
 
-/* Nächste Aufgabe */
+/* Zur nächsten Aufgabe: Aufgabe hochzählen, Fortschritt speichern oder
+am Ende aller Aufgaben zum Bewertungsblock wechseln */
 
 function nextTask() {
 
@@ -1286,7 +1275,7 @@ function startRatingBlock() {
 }
 
 
-/* Bewertungsbildschirm: ausgegrautes Beispiel eines Aufgabentyps */
+/* Bewertungs-Screen: zeigt Beispiel-Aufgabe und Slider */
 
 function showRatingScreen() {
 
@@ -1328,7 +1317,7 @@ function showRatingScreen() {
         }
     );
 
-    /* Antwortoptionen nur zur Orientierung, nicht klickbar */
+    /* Antwortoptionen nicht klickbar */
 
     const exampleOptions =
         document.getElementById(
@@ -1370,12 +1359,14 @@ function showRatingScreen() {
 }
 
 
-/* Slider Mensch / KI */
+/* Slider für Bewertung: Mensch oder KI */
 
 const ratingSliderIds = [
     "rating-human",
     "rating-ai"
 ];
+
+// Slider zurücksetzen, damit Teilnehmer beide Slider bewegen müssen
 
 function resetRatingSliders() {
 
@@ -1418,7 +1409,7 @@ function markSliderTouched(slider) {
     updateRatingSubmitState();
 }
 
-/* Weiter erst, wenn beide Slider bewegt wurden */
+/* Weiter gehen, wenn beide Slider bewegt wurden */
 
 function updateRatingSubmitState() {
 
